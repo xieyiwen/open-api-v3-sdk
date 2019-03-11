@@ -2,6 +2,7 @@ package okex
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -49,11 +50,22 @@ func TestGetFuturesInstrumentsCurrencies(t *testing.T) {
 }
 
 func TestGetFuturesInstrumentBook(t *testing.T) {
-	book, err := NewTestClient().GetFuturesInstrumentBook(InstrumentId, 10)
+	insId := getValidInstrumentId()
+	book, err := NewTestClient().GetFuturesInstrumentBook(insId, nil)
 	if err != nil {
 		t.Error(err)
 	}
 	FmtPrintln("Futures Instrument book: ", book)
+}
+
+func TestGetFuturesInstrumentBook2(t *testing.T) {
+	params := NewParams()
+	params["size"] = "10"
+	params["depth"] = "0.1"
+	insId := getValidInstrumentId()
+	r, err := NewTestClient().GetFuturesInstrumentBook(insId, nil)
+
+	simpleAssertTrue(r, err, t, false)
 }
 
 func TestGetFuturesInstrumentAllTicker(t *testing.T) {
@@ -81,11 +93,18 @@ func TestGetFuturesInstrumentTrades(t *testing.T) {
 }
 
 func TestGetFuturesInstrumentCandles(t *testing.T) {
-	start := "2018-10-24T07:10:00.000Z"
-	end := "2018-10-24T07:20:00.000Z"
+	//start := "2018-06-20T02:31:00Z"
+	//end := "2018-06-20T02:55:00Z"
 	granularity := CANDLES_1MIN
-	count := 1
-	candles, err := NewTestClient().GetFuturesInstrumentCandles(InstrumentId, start, end, granularity, count)
+
+	optional := map[string]string{}
+	//optional["start"] = start
+	//optional["end"] = end
+	optional["granularity"] = Int2String(granularity)
+
+	insId := getValidInstrumentId()
+
+	candles, err := NewTestClient().GetFuturesInstrumentCandles(insId, optional)
 	if err != nil {
 		t.Error(err)
 	}
@@ -95,7 +114,7 @@ func TestGetFuturesInstrumentCandles(t *testing.T) {
 		for j, inLen := 0, 7; j < inLen; j++ {
 			if j == 0 {
 				fmt.Print("timestamp:")
-				fmt.Print(LongTimeToUTC8Format(int64(candle[j])))
+				fmt.Print(candle[j])
 			} else if j == 1 {
 				fmt.Print(" open:")
 				fmt.Print(candle[j])
@@ -294,7 +313,7 @@ func TestGetFuturesOrder(t *testing.T) {
 }
 
 func TestBatchCancelFuturesInstrumentOrders(t *testing.T) {
-	var orderIds [3] int64
+	var orderIds [3]int64
 	orderIds[0] = 1713484060138496
 	orderIds[1] = 1713484060990464
 	orderIds[2] = 1713484061907968
@@ -321,9 +340,54 @@ func TestCancelFuturesInstrumentOrder(t *testing.T) {
 func TestGetFuturesFills(t *testing.T) {
 	orderId := int64(1713584667466752)
 	from, to, limit := 1, 0, 5
-	result, err := NewTestClient().GetFuturesFills(InstrumentId, orderId,from, to, limit)
+	optionals := map[string]int{}
+	optionals["from"] = from
+	optionals["to"] = to
+	optionals["limit"] = limit
+	result, err := NewTestClient().GetFuturesFills(InstrumentId, orderId, optionals)
 	if err != nil {
 		t.Error(err)
 	}
 	FmtPrintln("Futures Instrument fills: ", result)
+}
+
+func getValidInstrumentId() string {
+	c := NewTestClient()
+	insList, err := c.GetFuturesInstruments()
+	if err == nil {
+		return insList[0].InstrumentId
+	}
+
+	return InstrumentId
+}
+
+func TestGetInstrumentMarkPrice(t *testing.T) {
+	insId := getValidInstrumentId()
+	r, e := NewTestClient().GetInstrumentMarkPrice(insId)
+	simpleAssertTrue(r, e, t, false)
+	assert.True(t, r.Code == 0)
+}
+
+func TestFuturesAccountsLeverage(t *testing.T) {
+	c := NewTestClient()
+	r, e := c.GetFuturesAccountsLeverage(currency)
+	//assert.True(t, r["code"] == nil)
+	simpleAssertTrue(r, e, t, true)
+
+	// PostFuturesAccountsLeverage. 设定合约账户币种杠杆倍数，注意当前仓位有持仓或者挂单禁止切换杠杆。
+	// lingting.fu. 20190225. Cleanup your test env yourself before running test case.
+	//
+	// The following 2 cases might fail because of
+	// 		a. Not satisfying position or order requirements.
+	//		b. Invalid Authority
+	// Post C1. Full Position
+	r, e = c.PostFuturesAccountsLeverage(currency, 10, nil)
+	simpleAssertTrue(r, e, t, false)
+
+	// Post C2. One Position
+	params := NewParams()
+	params["instrument_id"] = getValidInstrumentId()
+	params["direction"] = "long"
+	r, e = c.PostFuturesAccountsLeverage(currency, 10, params)
+	simpleAssertTrue(r, e, t, false)
 }

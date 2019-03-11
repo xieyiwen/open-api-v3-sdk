@@ -47,7 +47,8 @@ endif()
 add_executable(${PROJECT_NAME} source/main.cpp source/swap.cpp source/okapi_ws.h source/okapi_ws.cpp source/base64.hpp
                                source/okapi.cpp source/okapi.h source/algo_hmac.h source/algo_hmac.cpp source/constants.h
         source/futures_api.cpp source/account_api.cpp source/utils.h source/utils.cpp source/spot/margin_account_api.cpp
-        source/spot/margin_order_api.cpp source/spot/spot_account_api.cpp source/ett_api.cpp)
+        source/spot/margin_order_api.cpp source/spot/spot_account_api.cpp source/spot/spot_order_api.cpp source/spot/spot_product_api.cpp
+        source/ett_api.cpp)
 
 # headers search paths ...
 set(CPPRESTSDK_INCLUDE_DIR "./libs/cpprestsdk/Release/include")

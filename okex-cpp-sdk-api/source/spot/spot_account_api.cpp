@@ -21,7 +21,7 @@ string OKAPI::GetSpotLedgersByCurrency(string currency, string from, string to, 
     m.insert(make_pair("from", from));
     m.insert(make_pair("to", to));
     m.insert(make_pair("limit", limit));
-    string request_path = BuildParams(SpotAccountPrefix+"accounts/"+currency+"ledger", m);
+    string request_path = BuildParams(SpotAccountPrefix+"accounts/"+currency+"/ledger", m);
     return Request(method, request_path);
 }
 

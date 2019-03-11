@@ -21,6 +21,7 @@ type ExchangeRate struct {
 type BizWarmTips struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
+	Msg     string `json:"msg"`
 }
 
 type Result struct {
@@ -92,6 +93,13 @@ type FuturesAccount struct {
 	MarginMode   string
 	CrossAccount map[string]FuturesCrossAccount
 	FixedAccount map[string]FuturesFixedAccount
+}
+
+type FuturesMarkdown struct {
+	BizWarmTips
+	InstrumentId string  `json:"instrument_id"`
+	Timestamp    string  `json:"timestamp"`
+	MarkPrice    float32 `json:"mark_price"`
 }
 
 type FuturesFixedAccountInfo struct {

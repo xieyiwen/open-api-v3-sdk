@@ -90,13 +90,14 @@ class FutureAPI(Client):
         return self._request_without_params(GET, FUTURE_ORDER_INFO + str(instrument_id) + '/' + str(order_id))
 
     # query fills
-    #def get_fills(self, order_id, instrument_id, before, after, limit):
-    #    params = {'order_id': order_id, 'before': before, 'after': after, 'limit': limit, 'instrument_id': instrument_id}
-    #    return self._request_with_params(GET, FUTURE_FILLS, params)
-
-    # query fills
     def get_fills(self, order_id, instrument_id, froms, to, limit):
-        params = {'order_id': order_id, 'from': froms, 'to': to, 'limit': limit, 'instrument_id': instrument_id}
+        params = {'order_id': order_id, 'instrument_id': instrument_id}
+        if froms:
+            params['from'] = froms
+        if to:
+            params['to'] = to
+        if limit:
+            params['limit'] = limit
         return self._request_with_params(GET, FUTURE_FILLS, params)
 
     # get products info
@@ -158,7 +159,7 @@ class FutureAPI(Client):
         return self._request_without_params(GET, FUTURE_LIMIT + str(instrument_id) + '/price_limit')
 
     # query limit price
-    def get_liquidation(self, instrument_id, status, froms = 0, to = 0, limit = 0):
+    def get_liquidation(self, instrument_id, status=0, froms = 0, to = 0, limit = 0):
         params = {'instrument_id': instrument_id, 'status': status}
         if froms:
             params['from'] = froms
@@ -172,5 +173,6 @@ class FutureAPI(Client):
     def get_holds_amount(self, instrument_id):
         return self._request_without_params(GET, HOLD_AMOUNT+ str(instrument_id) + '/holds')
 
-    def get_currencies(self):
-        return self._request_without_params(GET, CURRENCY_LIST)
+    # query mark price
+    def get_mark_price(self, instrument_id):
+        return self._request_without_params(GET, FUTURE_MARK +str(instrument_id) + '/mark_price')

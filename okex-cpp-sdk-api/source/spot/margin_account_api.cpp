@@ -17,7 +17,7 @@ string OKAPI::GetAccounts() {
  * @param instrument
  * @return
  */
-string OKAPI::GetAccountsByProductId(string instrument_id) {
+string OKAPI::GetAccountsByInstrumentId(string instrument_id) {
     return Request(GET, MarginAccountPrefix+"accounts/"+instrument_id);
 }
 
@@ -68,7 +68,7 @@ string OKAPI::GetMarginInfo() {
  * @param instrument
  * @return
  */
-string OKAPI::GetMarginInfoByProductId(string instrument_id) {
+string OKAPI::GetMarginInfoByInstrumentId(string instrument_id) {
     return Request(GET, MarginAccountPrefix+"accounts/"+instrument_id+"/availability");
 }
 
@@ -100,7 +100,7 @@ string OKAPI::GetBorrowAccounts(string status, string type, string from, string 
  * @param instrument
  * @return
  */
-string OKAPI::GetBorrowAccountsByProductId(string instrument_id, string status, string from, string to, string limit) {
+string OKAPI::GetBorrowAccountsByInstrumentId(string instrument_id, string status, string from, string to, string limit) {
     string method(GET);
     map<string,string> m;
     m.insert(make_pair("status", status));

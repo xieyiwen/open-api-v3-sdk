@@ -270,6 +270,7 @@ namespace OKExSDK
         /// 获取订单列表
         /// </summary>
         /// <param name="instrument_id">合约ID，如BTC-USD-180213</param>
+        /// <param name="status">订单状态(-1.撤单成功；0:等待成交 1:部分成交 2:全部成交 6：未完成（等待成交+部分成交）7：已完成（撤单成功+全部成交）</param>
         /// <param name="from">分页游标开始</param>
         /// <param name="to">分页游标截至</param>
         /// <param name="limit">分页数据数量，默认100</param>
@@ -424,7 +425,7 @@ namespace OKExSDK
         /// <summary>
         /// 获取某个ticker信息
         /// </summary>
-        /// <param name="instrument_id"></param>
+        /// <param name="instrument_id">合约ID，如BTC-USD-180213</param>
         /// <returns></returns>
         public async Task<JObject> getTickerByInstrumentId(string instrument_id)
         {
@@ -516,7 +517,7 @@ namespace OKExSDK
         /// <summary>
         /// 获取指数信息
         /// </summary>
-        /// <param name="instrument_id"></param>
+        /// <param name="instrument_id">合约ID，如BTC-USD-180213</param>
         /// <returns></returns>
         public async Task<JObject> getIndexAsync(string instrument_id)
         {
@@ -592,7 +593,7 @@ namespace OKExSDK
             }
         }
 
-        /// /// <summary>
+        /// <summary>
         /// 获取爆仓单
         /// </summary>
         /// <param name="instrument_id">合约ID，如BTC-USD-180213</param>

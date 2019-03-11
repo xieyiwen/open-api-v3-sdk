@@ -7,6 +7,9 @@ class SwapAPI(Client):
     def __init__(self, api_key, api_seceret_key, passphrase, use_server_time=False):
         Client.__init__(self, api_key, api_seceret_key, passphrase, use_server_time)
 
+    def get_position(self):
+        return self._request_without_params(GET, SWAP_POSITIONS)
+
     def get_specific_position(self, instrument_id):
         return self._request_without_params(GET, SWAP_POSITION+str(instrument_id) + '/position')
 

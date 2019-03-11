@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -16,6 +17,21 @@ namespace OKExSDK
                 byte[] buffer = hmacsha256.ComputeHash(sha256Data);
                 return Convert.ToBase64String(buffer);
             }
+        }
+
+        public static string MakeSign(string apiKey, string secret, string phrase)
+        {
+            var timeStamp = (DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
+            var sign = Encryptor.HmacSHA256($"{timeStamp}GET/users/self/verify", secret);
+            var info = new
+            {
+                op = "login",
+                args = new List<string>()
+                {
+                    apiKey,phrase,timeStamp.ToString(),sign
+                }
+            };
+            return JsonConvert.SerializeObject(info);
         }
     }
 }

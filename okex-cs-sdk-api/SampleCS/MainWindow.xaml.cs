@@ -9,8 +9,12 @@ using OKExSDK.Models.Margin;
 using OKExSDK.Models.Spot;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -56,16 +60,16 @@ namespace SampleCS
         private void btnSetKey(object sender, RoutedEventArgs e)
         {
             var keyinfo = ((MainViewModel)this.DataContext).KeyInfo;
-            var apikey = keyinfo.api_key;
-            var secret = keyinfo.secret;
-            var passphrase = keyinfo.passphrase;
-            this.generalApi = new GeneralApi(apikey, secret, passphrase);
-            this.accountApi = new AccountApi(apikey, secret, passphrase);
-            this.futureApi = new FuturesApi(apikey, secret, passphrase);
-            this.spotApi = new SpotApi(apikey, secret, passphrase);
-            this.marginApi = new MarginApi(apikey, secret, passphrase);
-            this.ettApi = new EttApi(apikey, secret, passphrase);
-            this.swapApi = new SwapApi(apikey, secret, passphrase);
+            apiKey = keyinfo.api_key;
+            secret = keyinfo.secret;
+            passPhrase = keyinfo.passphrase;
+            this.generalApi = new GeneralApi(apiKey, secret, passPhrase);
+            this.accountApi = new AccountApi(apiKey, secret, passPhrase);
+            this.futureApi = new FuturesApi(apiKey, secret, passPhrase);
+            this.spotApi = new SpotApi(apiKey, secret, passPhrase);
+            this.marginApi = new MarginApi(apiKey, secret, passPhrase);
+            this.ettApi = new EttApi(apiKey, secret, passPhrase);
+            this.swapApi = new SwapApi(apiKey, secret, passPhrase);
             MessageBox.Show("完成");
         }
 
@@ -3096,6 +3100,77 @@ namespace SampleCS
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        // 创建Websocketor对象
+        private WebSocketor websocketor = new WebSocketor();
+        /// <summary>
+        /// WebSocket消息推送侦听
+        /// </summary>
+        /// <param name="msg">WebSocket消息</param>
+        private void handleWebsocketMessage(string msg)
+        {
+            this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                this.msgBox.AppendText(msg + Environment.NewLine);
+            }));
+        }
+
+        private async void btnConnect(object sender, RoutedEventArgs e)
+        {
+            websocketor.WebSocketPush -= this.handleWebsocketMessage;
+            websocketor.WebSocketPush += this.handleWebsocketMessage;
+            await websocketor.ConnectAsync();
+            MessageBox.Show("连接成功");
+        }
+
+        private async void btnSubscribe(object sender, RoutedEventArgs e)
+        {
+            await websocketor.Subscribe(new List<String>() { "swap/ticker:BTC-USD-SWAP", "swap/candle60s:BTC-USD-SWAP" });
+        }
+
+        private async void btnUnSubscribe(object sender, RoutedEventArgs e)
+        {
+            await websocketor.UnSubscribe(new List<String>() { "swap/ticker:BTC-USD-SWAP", "swap/candle60s:BTC-USD-SWAP" });
+        }
+
+        private async void btnLogin(object sender, RoutedEventArgs e)
+        {
+            await websocketor.LoginAsync(this.apiKey, this.secret, this.passPhrase);
+        }
+
+        private async void btnSubscribeLogin(object sender, RoutedEventArgs e)
+        {
+            await websocketor.Subscribe(new List<String>() { "futures/account:BTC" });
+        }
+
+        private void btnDispose(object sender, RoutedEventArgs e)
+        {
+            websocketor.Dispose();
+        }
+
+        private async void btnProgress(object sender, RoutedEventArgs e)
+        {
+            // 取消事件侦听
+            websocketor.WebSocketPush -= this.handleWebsocketMessage;
+            // 添加事件侦听
+            websocketor.WebSocketPush += this.handleWebsocketMessage;
+            try
+            {
+                // 建立WebSocket连接
+                await websocketor.ConnectAsync();
+                // 订阅无需登录的Channel
+                await websocketor.Subscribe(new List<String>() { "swap/ticker:BTC-USD-SWAP", "swap/candle60s:BTC-USD-SWAP" });
+                // 登录
+                await websocketor.LoginAsync(this.apiKey, this.secret, this.passPhrase);
+                // 等待登录
+                await Task.Delay(500);
+                // 订阅需要登录的Channel
+                await websocketor.Subscribe(new List<String>() { "futures/account:BTC" });
+            }
+            catch (Exception ex)
+            {
             }
         }
     }

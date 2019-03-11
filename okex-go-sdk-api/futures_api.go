@@ -43,14 +43,24 @@ func (client *Client) GetFuturesInstrumentCurrencies() ([]FuturesInstrumentCurre
 }
 
 /*
- Get the futures contract Instrument book
- depth value：1-200
- merge value：1(merge depth)
+	获取深度数据
+	获取币对的深度列表。这个请求不支持分页，一个请求返回整个深度列表。
+
+	限速规则：20次/2s
+	HTTP请求
+	GET /api/spot/v3/instruments/<instrument_id>/book
+
+	签名请求示例
+	2018-09-12T07:57:09.130ZGET/api/spot/v3/instruments/LTC-USDT/book?size=10&depth=0.001
+
 */
-func (client *Client) GetFuturesInstrumentBook(InstrumentId string, size int) (FuturesInstrumentBookResult, error) {
+func (client *Client) GetFuturesInstrumentBook(InstrumentId string, optionalParams map[string]string) (FuturesInstrumentBookResult, error) {
 	var book FuturesInstrumentBookResult
 	params := NewParams()
-	params["size"] = Int2String(size)
+	if optionalParams != nil && len(optionalParams) > 0 {
+		params["size"] = optionalParams["size"]
+		params["depth"] = optionalParams["depth"]
+	}
 	requestPath := BuildParams(GetInstrumentIdUri(FUTURES_INSTRUMENT_BOOK, InstrumentId), params)
 	_, err := client.Request(GET, requestPath, nil, &book)
 	return book, err
@@ -87,13 +97,15 @@ func (client *Client) GetFuturesInstrumentTrades(InstrumentId string) ([]Futures
  Get the futures contract Instrument candles
  granularity: @see  file: futures_constants.go
 */
-func (client *Client) GetFuturesInstrumentCandles(InstrumentId, start, end string, granularity, count int) ([][]float64, error) {
-	var candles [][]float64
+func (client *Client) GetFuturesInstrumentCandles(InstrumentId string, optionalParams map[string]string) ([][]string, error) {
+	var candles [][]string
 	params := NewParams()
-	params["start"] = start
-	params["end"] = end
-	params["granularity"] = Int2String(granularity)
-	params["count"] = Int2String(count)
+
+	if optionalParams != nil && len(optionalParams) > 0 {
+		params["start"] = optionalParams["start"]
+		params["end"] = optionalParams["end"]
+		params["granularity"] = optionalParams["granularity"]
+	}
 	requestPath := BuildParams(GetInstrumentIdUri(FUTURES_INSTRUMENT_CANDLES, InstrumentId), params)
 	_, err := client.Request(GET, requestPath, nil, &candles)
 	return candles, err
@@ -198,7 +210,7 @@ func (client *Client) GetFuturesAccountsByCurrency(currency string) (FuturesCurr
  Get the futures contract currency ledger
 */
 func (client *Client) GetFuturesAccountsLedgerByCurrency(currency string, from, to, limit int) ([]FuturesCurrencyLedger, error) {
-	var ledger [] FuturesCurrencyLedger
+	var ledger []FuturesCurrencyLedger
 	params := NewParams()
 	params["from"] = Int2String(from)
 	params["to"] = Int2String(to)
@@ -283,17 +295,35 @@ func (client *Client) CancelFuturesInstrumentOrder(InstrumentId string, orderId 
 /*
  Get all of futures contract transactions.
 */
-func (client *Client) GetFuturesFills(InstrumentId string, orderId int64, from, to, limit int) ([]FuturesFillResult, error) {
+func (client *Client) GetFuturesFills(InstrumentId string, orderId int64, optionalParams map[string]int) ([]FuturesFillResult, error) {
 	var fillsResult []FuturesFillResult
 	params := NewParams()
 	params["order_id"] = Int64ToString(orderId)
 	params["instrument_id"] = InstrumentId
-	params["from"] = Int2String(from)
-	params["to"] = Int2String(to)
-	params["limit"] = Int2String(limit)
+
+	if optionalParams != nil && len(optionalParams) > 0 {
+		params["from"] = Int2String(optionalParams["from"])
+		params["to"] = Int2String(optionalParams["to"])
+		params["limit"] = Int2String(optionalParams["limit"])
+	}
+
 	requestPath := BuildParams(FUTURES_FILLS, params)
 	_, err := client.Request(GET, requestPath, nil, &fillsResult)
 	return fillsResult, err
+}
+
+/*
+获取标记价格
+获取合约标记价格。此接口为公共接口，不需要身份验证。
+
+请求示例
+GET/api/futures/v3/instruments/BTC-USD-180309/mark_price
+*/
+func (c *Client) GetInstrumentMarkPrice(instrumentId string) (*FuturesMarkdown, error) {
+	uri := GetInstrumentIdUri(FUTURES_INSTRUMENT_MARK_PRICE, instrumentId)
+	r := FuturesMarkdown{}
+	_, err := c.Request(GET, uri, nil, &r)
+	return &r, err
 }
 
 func parsePositions(response *http.Response, err error) (FuturesPosition, error) {
@@ -415,4 +445,49 @@ func parsePage(response *http.Response) PageResult {
 	jsonString := GetResponsePageJsonString(response)
 	JsonString2Struct(jsonString, &page)
 	return page
+}
+
+/*
+设定合约币种杠杆倍数
+设定合约账户币种杠杆倍数，注意当前仓位有持仓或者挂单禁止切换杠杆。
+
+HTTP请求
+POST /api/futures/v3/accounts/<currency>/leverage
+
+请求示例
+POST/api/futures/v3/accounts/btc/leverage{"leverage":"10"}（全仓示例）
+POST/api/futures/v3/accounts/btc/leverage{"instrument_id":"BTC-USD-180213","direction":"long","leverage":"10"}（逐仓示例）
+
+*/
+func (c *Client) PostFuturesAccountsLeverage(currency string, leverage int, optionalParams map[string]string) (map[string]interface{}, error) {
+	uri := GetCurrencyUri(FUTURES_ACCOUNT_CURRENCY_LEVERAGE, currency)
+	params := NewParams()
+	params["leverage"] = Int2String(leverage)
+
+	if optionalParams != nil && len(optionalParams) > 0 {
+		params["instrument_id"] = optionalParams["instrument_id"]
+		params["direction"] = optionalParams["direction"]
+	}
+
+	r := new(map[string]interface{})
+	_, err := c.Request(POST, uri, params, r)
+
+	return *r, err
+}
+
+/*
+获取合约账户币种杠杆倍数
+
+限速规则：5次/2s
+HTTP请求
+GET /api/futures/v3/accounts/<currency>/leverage
+
+请求示例
+GET/api/futures/v3/accounts/btc/leverage
+*/
+func (c *Client) GetFuturesAccountsLeverage(currency string) (map[string]interface{}, error) {
+	uri := GetCurrencyUri(FUTURES_ACCOUNT_CURRENCY_LEVERAGE, currency)
+	r := new(map[string]interface{})
+	_, err := c.Request(GET, uri, nil, r)
+	return *r, err
 }

@@ -4,7 +4,7 @@
 
 ###  2.依赖Json.NET序列化/反序列化
 
-### 3.简单使用
+### 3.Api简单使用
 
 ```c#
 private async void btnGetPositions(object sender, RoutedEventArgs e)
@@ -53,7 +53,53 @@ private async void btnGetPositions(object sender, RoutedEventArgs e)
 }
 ```
 
-### 4.接口列表
+### 4.WebSocket简单使用
+
+```C#
+// 创建Websocketor对象
+private WebSocketor websocketor = new WebSocketor();
+
+/// <summary>
+/// WebSocket消息推送侦听
+/// </summary>
+/// <param name="msg">WebSocket消息</param>
+private void handleWebsocketMessage(string msg)
+{
+    // msg: 远端服务推送的消息，如：
+    // {"event":"subscribe","channel":"swap/ticker:BTC-USD-SWAP"}
+    // {"table":"swap/ticker","data":[{"best_ask":"3620.8","best_bid":"3620.7","high_24h":"3635.1","instrument_id":"BTC-USD-SWAP","last":"3620.7","low_24h":"3580","timestamp":"2019-01-19T03:43:29.567Z","volume_24h":"600655"}]}
+    this.Dispatcher.BeginInvoke(new Action(() =>
+                                           {
+                                               this.msgBox.AppendText(msg + Environment.NewLine);
+                                           }));
+}
+
+private async void btnProgress(object sender, RoutedEventArgs e)
+{
+    // 取消事件侦听
+    websocketor.WebSocketPush -= this.handleWebsocketMessage;
+    // 添加事件侦听
+    websocketor.WebSocketPush += this.handleWebsocketMessage;
+    try
+    {
+        // 建立WebSocket连接
+        await websocketor.ConnectAsync();
+        // 订阅无需登录的Channel
+        await websocketor.Subscribe(new List<String>() { "swap/ticker:BTC-USD-SWAP", "swap/candle60s:BTC-USD-SWAP" });
+        // 登录
+        await websocketor.LoginAsync(this.apiKey, this.secret, this.passPhrase);
+        // 等待登录
+        await Task.Delay(500);
+        // 订阅需要登录的Channel
+        await websocketor.Subscribe(new List<String>() { "futures/account:BTC" });
+    }
+    catch (Exception ex)
+    {
+    }
+}
+```
+
+### 5.接口列表
 
 #### a)钱包API对应AccountApi
 

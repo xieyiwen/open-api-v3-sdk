@@ -16,6 +16,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"sync"
 	"syscall"
 	"time"
@@ -35,6 +36,7 @@ type OKWSAgent struct {
 
 	subMap         map[string][]ReceivedDataCallback
 	activeChannels map[string]bool
+	hotDepthsMap   map[string]*WSHotDepths
 
 	processMut sync.Mutex
 }
@@ -60,6 +62,7 @@ func (a *OKWSAgent) Start(config *Config) error {
 		a.signalCh = make(chan os.Signal)
 		a.activeChannels = make(map[string]bool)
 		a.subMap = make(map[string][]ReceivedDataCallback)
+		a.hotDepthsMap = make(map[string]*WSHotDepths)
 
 		signal.Notify(a.signalCh, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
@@ -149,22 +152,21 @@ func (a *OKWSAgent) keepalive() {
 func (a *OKWSAgent) Stop() error {
 	defer func() {
 		a := recover()
-		log.Println(a)
+		log.Printf("Stop End. Recover msg: %+v", a)
 	}()
 
-	a.stopCh <- nil
+	close(a.stopCh)
 	return nil
 }
 
 func (a *OKWSAgent) finalize() error {
 	defer func() {
-		log.Printf("Connection to WebSocket is closed.")
+		log.Printf("Finalize End. Connection to WebSocket is closed.")
 	}()
 
 	select {
 	case <-a.stopCh:
 		if a.conn != nil {
-			close(a.stopCh)
 			close(a.errCh)
 			close(a.wsTbCh)
 			close(a.wsEvtCh)
@@ -201,12 +203,19 @@ func (a *OKWSAgent) handleEventResponse(r interface{}) error {
 }
 
 func (a *OKWSAgent) handleTableResponse(r interface{}) error {
-	tr := r.(*WSTableResponse)
-	cbs := a.subMap[tr.Table]
+	tb := ""
+	switch r.(type) {
+	case *WSTableResponse:
+		tb = r.(*WSTableResponse).Table
+	case *WSDepthTableResponse:
+		tb = r.(*WSDepthTableResponse).Table
+	}
+
+	cbs := a.subMap[tb]
 	if cbs != nil {
 		for i := 0; i < len(cbs); i++ {
 			cb := cbs[i]
-			if err := cb(tr); err != nil {
+			if err := cb(r); err != nil {
 				return err
 			}
 		}
@@ -217,7 +226,8 @@ func (a *OKWSAgent) handleTableResponse(r interface{}) error {
 func (a *OKWSAgent) work() {
 	defer func() {
 		a := recover()
-		log.Println(a)
+		log.Printf("Work End. Recover msg: %+v", a)
+		debug.PrintStack()
 	}()
 
 	defer a.Stop()
@@ -240,6 +250,9 @@ func (a *OKWSAgent) work() {
 		case err := <-a.errCh:
 			DefaultDataCallBack(err)
 			break
+		case <-a.stopCh:
+			return
+
 		}
 	}
 }
@@ -247,7 +260,10 @@ func (a *OKWSAgent) work() {
 func (a *OKWSAgent) receive() {
 	defer func() {
 		a := recover()
-		log.Println(a)
+		if a != nil {
+			log.Printf("Receive End. Recover msg: %+v", a)
+			debug.PrintStack()
+		}
 	}()
 
 	for {
@@ -281,6 +297,19 @@ func (a *OKWSAgent) receive() {
 		case *WSEventResponse:
 			er := rsp.(*WSEventResponse)
 			a.wsEvtCh <- er
+		case *WSDepthTableResponse:
+
+			dtr := rsp.(*WSDepthTableResponse)
+			hotDepths := a.hotDepthsMap[dtr.Table]
+			if hotDepths == nil {
+				hotDepths = NewWSHotDepths(dtr.Table)
+				hotDepths.loadWSDepthTableResponse(dtr)
+				a.hotDepthsMap[dtr.Table] = hotDepths
+			} else {
+				hotDepths.loadWSDepthTableResponse(dtr)
+			}
+			a.wsTbCh <- dtr
+
 		case *WSTableResponse:
 			tb := rsp.(*WSTableResponse)
 			a.wsTbCh <- tb

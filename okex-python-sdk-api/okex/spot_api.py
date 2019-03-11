@@ -33,14 +33,34 @@ class SpotAPI(Client):
                   'price': price, 'funds': funds, 'margin_trading': margin_trading}
         return self._request_with_params(POST, SPOT_ORDER, params)
 
+    # take orders
+    # 市价单
+    # params = [
+    #   {"client_oid":"20180728","instrument_id":"btc-usdt","side":"sell","type":"market"," size ":"0.001"," notional ":"10001","margin_trading ":"1"},
+    #   {"client_oid":"20180728","instrument_id":"btc-usdt","side":"sell","type":"limit"," size ":"0.001","notional":"10002","margin_trading ":"1"}
+    # ]
+
+    # 限价单
+    # params = [
+    #   {"client_oid":"20180728","instrument_id":"btc-usdt","side":"sell","type":"limit","size":"0.001","price":"10001","margin_trading ":"1"},
+    #   {"client_oid":"20180728","instrument_id":"btc-usdt","side":"sell","type":"limit","size":"0.001","price":"10002","margin_trading ":"1"}
+    # ]
+    def take_orders(self, params):
+        return self._request_with_params(POST, SPOT_ORDERS, params)
+
     # revoke order
     def revoke_order(self, oid, instrument_id):
         params = {'instrument_id': instrument_id}
         return self._request_with_params(POST, SPOT_REVOKE_ORDER + str(oid), params)
 
     # revoke orders
-    def revoke_orders(self, instrument_id, order_ids):
-        params = {'instrument_id': instrument_id, 'order_ids': order_ids}
+
+    # params example:
+    # [
+    #   {"instrument_id":"btc-usdt","order_ids":[1600593327162368,1600593327162369]},
+    #   {"instrument_id":"ltc-usdt","order_ids":[243464,234465]}
+    # ]
+    def revoke_orders(self, params):
         return self._request_with_params(POST, SPOT_REVOKE_ORDERS, params)
 
     # query orders list
@@ -64,16 +84,26 @@ class SpotAPI(Client):
         params = {'instrument_id': instrument_id}
         return self._request_with_params(GET, SPOT_ORDER_INFO + str(order_id), params)
 
-    def get_orders_pending(self, froms, to, limit):
-        params = {'limit': limit}
+    def get_orders_pending(self, froms, to, limit, instrument_id):
+        params = {}
         if froms:
             params['from'] = froms
         if to:
             params['to'] = to
+        if limit:
+            params['limit'] = limit
+        if instrument_id:
+            params['instrument_id'] = instrument_id
         return self._request_with_params(GET, SPOT_ORDERS_PENDING, params, cursor=True)
 
-    def get_fills(self, order_id, instrument_id, froms, to, limit='100'):
-        params = {'order_id': order_id, 'instrument_id': instrument_id, 'from': froms, 'to': to, 'limit': limit}
+    def get_fills(self, order_id, instrument_id, froms, to, limit):
+        params = {'order_id': order_id, 'instrument_id': instrument_id}
+        if froms:
+            params['from'] = froms
+        if to:
+            params['to'] = to
+        if limit:
+            params['limit'] = limit
         return self._request_with_params(GET, SPOT_FILLS, params, cursor=True)
 
     # query spot coin info
@@ -98,18 +128,25 @@ class SpotAPI(Client):
     def get_specific_ticker(self, instrument_id):
         return self._request_without_params(GET, SPOT_SPECIFIC_TICKER + str(instrument_id) + '/ticker')
 
-    # query spot deal info
-    #def get_deal(self, instrument_id, before, after, limit):
-    #    params = {'before': before, 'after': after, 'limit': limit}
-    #    return self._request_with_params(GET, SPOT_DEAL + str(instrument_id) + '/trades', params)
-
     def get_deal(self, instrument_id, froms, to, limit):
-        params = {'from': froms, 'to': to, 'limit': limit}
+        params = {}
+        if froms:
+            params['from'] = froms
+        if to:
+            params['to'] = to
+        if limit:
+            params['limit'] = limit
         return self._request_with_params(GET, SPOT_DEAL + str(instrument_id) + '/trades', params)
 
     # query k-line info
     def get_kline(self, instrument_id, start, end, granularity):
-        params = {'start': start, 'end': end, 'granularity': granularity}
+        params = {}
+        if start:
+            params['start'] = start
+        if end:
+            params['end'] = end
+        if granularity:
+            params['granularity'] = granularity
         return self._request_with_params(GET, SPOT_KLINE + str(instrument_id) + '/candles', params)
 
 

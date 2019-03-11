@@ -18,10 +18,10 @@ string OKAPI::AddSpotBatchOrder(value &jsonObj) {
  * @param instrument_id
  * @param order
  */
-string OKAPI::CancleSpotOrdersByProductIdAndOrderId(value &jsonObj) {
-    string method(DELETE);
+string OKAPI::CancleSpotOrdersByInstrumentIdAndOrderId(string order_id, value &jsonObj) {
+    string method(POST);
     string body = jsonObj.serialize();
-    string request_path(SpotOrderPrefix+"orders/"+order_id);
+    string request_path(SpotOrderPrefix+"orders/" + order_id);
     return Request(method, request_path, body);
 }
 
@@ -29,10 +29,10 @@ string OKAPI::CancleSpotOrdersByProductIdAndOrderId(value &jsonObj) {
  * Cancle batch order
  *
  * @param instrument_id
- * @param order
+ * @param order_ids
  */
-string OKAPI::CancleSpotOrdersByProductIdAndOrderId(value &jsonObj) {
-    string method(DELETE);
+string OKAPI::CancleSpotBatchOrders(value &jsonObj){
+    string method(POST);
     string params = jsonObj.serialize();
     return Request(POST, SpotOrderPrefix+"cancel_batch_orders", params);
 }
@@ -44,7 +44,7 @@ string OKAPI::CancleSpotOrdersByProductIdAndOrderId(value &jsonObj) {
  * @param order_id
  * @return
  */
-string OKAPI::GetSpotOrderByProductIdAndOrderId(string order_id, string instrument_id) {
+string OKAPI::GetSpotOrderByInstrumentIdAndOrderId(string order_id, string instrument_id) {
     string method(GET);
     map<string,string> m;
     m.insert(make_pair("instrument_id", instrument_id));
@@ -74,12 +74,13 @@ string OKAPI::GetSpotOrders(string instrument_id, string status, string from, st
     return Request(method, request_path);
 }
 
-string OKAPI::GetSpotOrdersPending(string from, string to, string limit) {
+string OKAPI::GetSpotOrdersPending(string from, string to, string limit, string instrument_id) {
     string method(GET);
     map<string,string> m;
     m.insert(make_pair("from", from));
     m.insert(make_pair("to", to));
     m.insert(make_pair("limit", limit));
+    m.insert(make_pair("instrument_id", instrument_id));
     string request_path = BuildParams(SpotOrderPrefix+"orders_pending", m);
     return Request(method, request_path);
 }
@@ -87,6 +88,7 @@ string OKAPI::GetSpotOrdersPending(string from, string to, string limit) {
 string OKAPI::GetSpotFills(string order_id, string instrument_id,  string from, string to, string limit) {
     string method(GET);
     map<string,string> m;
+    m.insert(make_pair("order_id", order_id));
     m.insert(make_pair("instrument_id", instrument_id));
     m.insert(make_pair("from", from));
     m.insert(make_pair("to", to));

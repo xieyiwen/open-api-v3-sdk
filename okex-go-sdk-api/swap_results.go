@@ -27,6 +27,8 @@ type SwapPosition struct {
 	Holding    []SwapPositionHolding `json:"holding"`
 }
 
+type SwapPositionList []SwapPosition
+
 type SwapAccountInfo struct {
 	InstrumentId      string `json:"instrument_id"`
 	Timestamp         string `json:"timestamp"`
@@ -44,6 +46,10 @@ type SwapAccountInfo struct {
 type SwapAccounts struct {
 	BizWarmTips
 	Info []SwapAccountInfo `json:"info"`
+}
+
+type SwapAccount struct {
+	Info SwapAccountInfo `json:"info"`
 }
 
 type BaseSwapOrderResult struct {
@@ -109,10 +115,7 @@ type BaseFillInfo struct {
 	ExecType     string `json:"exec_type"`
 }
 
-type SwapFillsInfo struct {
-	BizWarmTips
-	FillInfo []*BaseFillInfo `json:"fill_info"`
-}
+type SwapFillsInfo []BaseFillInfo
 
 type SwapAccountsSetting struct {
 	BizWarmTips
@@ -151,6 +154,7 @@ type BaesDepthInfo []interface{}
 type SwapInstrumentDepth struct {
 	BizWarmTips
 	Timestamp string          `json:"timestamp"`
+	Time      string          `json:"time"`
 	Bids      []BaesDepthInfo `json:"bids"`
 	Asks      []BaesDepthInfo `json:"asks"`
 }

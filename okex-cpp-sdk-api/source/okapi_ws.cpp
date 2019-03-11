@@ -8,6 +8,8 @@
 #include <cpprest/json.h>
 #include <cpprest/filestream.h>
 
+#define BUFLEN 65536
+
 using namespace web;
 using namespace web::websockets::client;
 using namespace concurrency::streams;       // Asynchronous streams
@@ -81,10 +83,10 @@ void okapi_ws::RequestWithoutLogin(std::string url, std::string channels, std:: 
                       while (op.compare("subscribe")==0) {
 
                           // Write response body into the file.
-                          unsigned char buf[4096] = {0};
-                          unsigned char data[4096] = {0};
+                          unsigned char buf[BUFLEN]= {0};
+                          unsigned char data[BUFLEN] = {0};
 
-                          auto buflen = msg.body().streambuf().scopy(buf, 4096);
+                          auto buflen = msg.body().streambuf().scopy(buf, BUFLEN);
                           uLong datalen = sizeof(data);
 
                           if (msg.message_type() == websocket_message_type::binary_message) {
@@ -189,10 +191,10 @@ void okapi_ws::Request(std::string url, std::string channels, std::string op, st
             .then([&](websocket_incoming_message msg)
                   {
                       // Write response body into the file.
-                      unsigned char buf[4096] = {0};
-                      unsigned char data[4096] = {0};
+                      unsigned char buf[BUFLEN] = {0};
+                      unsigned char data[BUFLEN] = {0};
 
-                      auto buflen = msg.body().streambuf().scopy(buf, 4096);
+                      auto buflen = msg.body().streambuf().scopy(buf, BUFLEN);
                       uLong datalen = sizeof(data);
 
                       if (msg.message_type() == websocket_message_type::binary_message) {
@@ -235,10 +237,10 @@ void okapi_ws::Request(std::string url, std::string channels, std::string op, st
                       while (op.compare("subscribe")==0) {
 
                           // Write response body into the file.
-                          unsigned char buf[4096] = {0};
-                          unsigned char data[4096] = {0};
+                          unsigned char buf[BUFLEN] = {0};
+                          unsigned char data[BUFLEN] = {0};
 
-                          auto buflen = msg.body().streambuf().scopy(buf, 4096);
+                          auto buflen = msg.body().streambuf().scopy(buf, BUFLEN);
                           uLong datalen = sizeof(data);
 
                           if (msg.message_type() == websocket_message_type::binary_message) {

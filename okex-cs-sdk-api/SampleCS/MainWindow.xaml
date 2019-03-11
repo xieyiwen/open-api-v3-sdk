@@ -517,6 +517,20 @@
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
+            <TabItem Header="WebSocket">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="连接" Height="30" Width="60" Click="btnConnect"></Button>
+                        <Button Content="订阅" Height="30" Width="60" Click="btnSubscribe"></Button>
+                        <Button Content="登录" Height="30" Width="60" Click="btnLogin"/>
+                        <Button Content="订阅需登录" Height="30" Width="120" Click="btnSubscribeLogin"></Button>
+                        <Button Content="取消订阅" Height="30" Width="60" Click="btnUnSubscribe"></Button>
+                        <Button Content="销毁" Height="30" Width="60" Click="btnDispose"></Button>
+                        <Button Content="全流程" Height="30" Width="60" Click="btnProgress"/>
+                    </StackPanel>
+                    <RichTextBox Name="msgBox" Height="407"></RichTextBox>
+                </StackPanel>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

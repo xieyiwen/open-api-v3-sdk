@@ -7,26 +7,26 @@ static string SpotProductPrefix = "/api/spot/v3/";
  *
  * @return
  */
-string OKAPI::GetProducts() {
-    return Request(GET, SpotProductPrefix+"products");
+string OKAPI::GetInstruments(){
+    return Request(GET, SpotProductPrefix+"instruments");
 }
 
 
-string OKAPI::GetProductsByProductId(string instrument_id, string size, string depth) {
+string OKAPI::GetInstrumentsByInstrumentId(string instrument_id, string size, string depth) {
     string method(GET);
     map<string,string> m;
     m.insert(make_pair("size", size));
     m.insert(make_pair("depth", depth));
-    string request_path = BuildParams(SpotProductPrefix+"products/"+instrument_id+"/book", m);
+    string request_path = BuildParams(SpotProductPrefix+"instruments/"+instrument_id+"/book", m);
     return Request(method, request_path);
 }
 
 string OKAPI::GetTickers() {
-    return Request(GET, SpotProductPrefix+"products/ticker");
+    return Request(GET, SpotProductPrefix+"instruments/ticker");
 }
 
-string OKAPI::GetTickerByProductId(string instrument_id) {
-    return Request(GET, SpotProductPrefix+"products/"+instrument_id+"/ticker");
+string OKAPI::GetTickerByInstrumentId(string instrument_id) {
+    return Request(GET, SpotProductPrefix+"instruments/"+instrument_id+"/ticker");
 }
 
 string OKAPI::GetTrades(string instrument_id, string from, string to, string limit) {
@@ -35,16 +35,17 @@ string OKAPI::GetTrades(string instrument_id, string from, string to, string lim
     m.insert(make_pair("from", from));
     m.insert(make_pair("to", to));
     m.insert(make_pair("limit", limit));
-    string request_path = BuildParams(SpotOrderPrefix+"products/"+instrument_id+"/trades", m);
+    string request_path = BuildParams(SpotProductPrefix+"instruments/"+instrument_id+"/trades", m);
     return Request(method, request_path);
 }
 
-string OKAPI::GetCandles(string instrument_id, string granularity, string start, string end) {
+string OKAPI::GetCandles(string instrument_id, int granularity, string start, string end) {
     string method(GET);
+    value obj;
     map<string,string> m;
-    m.insert(make_pair("granularity", granularity));
+    m.insert(make_pair("granularity", to_string(granularity)));
     m.insert(make_pair("start", start));
     m.insert(make_pair("end", end));
-    string request_path = BuildParams(SpotOrderPrefix+"products/"+instrument_id+"/candles", m);
+    string request_path = BuildParams(SpotProductPrefix+"instruments/"+instrument_id+"/candles", m);
     return Request(method, request_path);
 }

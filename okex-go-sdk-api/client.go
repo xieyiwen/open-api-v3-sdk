@@ -137,12 +137,11 @@ func (client *Client) Request(method string, requestPath string,
 		}
 		return response, nil
 	} else if status >= 400 || status <= 500 {
-		fmt.Println("Http error(400~500) result: status=" + IntToString(status) + ", message=" + message + ", body=" + responseBodyString)
+		errMsg := "Http error(400~500) result: status=" + IntToString(status) + ", message=" + message + ", body=" + responseBodyString
+		fmt.Println(errMsg)
 		if body != nil {
-			err := JsonBytes2Struct(body, &result)
-			if err != nil {
-				return response, err
-			}
+			err := errors.New(errMsg)
+			return response, err
 		}
 	} else {
 		fmt.Println("Http error result: status=" + IntToString(status) + ", message=" + message + ", body=" + responseBodyString)
