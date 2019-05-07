@@ -123,16 +123,27 @@ public interface FuturesTradeAPIService {
      */
     JSONObject getInstrumentLeverRate(String currency);
 
+
     /**
-     * Change the futures LeverRate
+     * Change the futures Fixed LeverRate
      *
-     * @param currency  eg: btc
-     * @param instrumentId  eg: BTC-USD-0331
-     * @param leverage  eg: 10/20
-     * @param direction  eg: 1/2
+     * @param currency       eg: btc
+     * @param instrumentId   eg: BTC-USD-190628
+     * @param direction      eg: long
+     * @param leverage       eg: 10
+     * @return
      */
-    JSONObject changeLevelRate( String currency,String instrumentId,String direction, int leverage);
+    JSONObject changeLeverageOnFixed(String currency,String instrumentId,String direction, String leverage);
+
+    /**
+     * Change the futures Cross LeverRate
+     *
+     * @param currency      eg: btc
+     * @param leverage      eg: 10
+     * @return
+     */
+    JSONObject changeLeverageOnCross(String currency,String leverage);
 
 
-    JSONObject changequancangLevelRate( String currency, int leverage);
+
 }

@@ -106,14 +106,19 @@ public class FuturesTradeAPIServiceImpl implements FuturesTradeAPIService {
         return this.client.executeSync(this.api.getLeverRate(instrumentId));
     }
 
-
     @Override
-    public JSONObject changeLevelRate(String currency, String instrumentId, String direction, int leverage) {
-        return this.client.executeSync(this.api.changeLevelRate(currency, instrumentId, direction, leverage));
+    public JSONObject changeLeverageOnFixed(String currency, String instrumentId, String direction, String leverage) {
+        JSONObject params = new JSONObject();
+        params.put("instrument_id", instrumentId);
+        params.put("direction", direction);
+        params.put("leverage", leverage);
+        return this.client.executeSync(this.api.changeLeverageOnFixed(currency, params));
     }
 
     @Override
-    public JSONObject changequancangLevelRate(String currency, int leverage) {
-        return this.client.executeSync(this.api.changequancanLevelRate(currency, leverage));
+    public JSONObject changeLeverageOnCross(String currency, String leverage) {
+        JSONObject params = new JSONObject();
+        params.put("leverage", leverage);
+        return this.client.executeSync(this.api.changeLeverageOnCross(currency, params));
     }
 }

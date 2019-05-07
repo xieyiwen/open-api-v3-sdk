@@ -16,11 +16,11 @@ public class Trades {
     /**
      * Transaction price
      */
-    private Double price;
+    private String price;
     /**
      * Transaction amount
      */
-    private Double qty;
+    private String qty;
     /**
      * Transaction date
      */
@@ -37,19 +37,19 @@ public class Trades {
     public void setSide(String side) { this.side = side; }
 
 
-    public Double getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 
-    public Double getQty() {
+    public String getQty() {
         return qty;
     }
 
-    public void setQty(Double qty) {
+    public void setQty(String qty) {
         this.qty = qty;
     }
 

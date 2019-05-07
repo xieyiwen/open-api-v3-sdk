@@ -23,11 +23,11 @@ public class Instruments {
     /**
      * Minimum amount: $
      */
-    private Double tick_size;
+    private String tick_size;
     /**
      * Unit price per contract
      */
-    private Double contract_val;
+    private String contract_val;
     /**
      * Effect of time
      */
@@ -39,7 +39,7 @@ public class Instruments {
     /**
      * Minimum amount: cont
      */
-    private Double trade_increment;
+    private String trade_increment;
 
     public String getInstrument_id() { return instrument_id; }
 
@@ -54,15 +54,15 @@ public class Instruments {
         this.quote_currency = quote_currency;
     }
 
-    public Double getTick_size() { return tick_size; }
+    public String getTick_size() { return tick_size; }
 
-    public void setTick_size(Double tick_size) { this.tick_size = tick_size; }
+    public void setTick_size(String tick_size) { this.tick_size = tick_size; }
 
-    public Double getContract_val() {
+    public String getContract_val() {
         return contract_val;
     }
 
-    public void setContract_val(Double contract_val) {
+    public void setContract_val(String contract_val) {
         this.contract_val = contract_val;
     }
 
@@ -82,11 +82,11 @@ public class Instruments {
         this.delivery = delivery;
     }
 
-    public Double getTrade_increment() {
+    public String getTrade_increment() {
         return trade_increment;
     }
 
-    public void setTrade_increment(Double trade_increment) {
+    public void setTrade_increment(String trade_increment) {
         this.trade_increment = trade_increment;
     }
 

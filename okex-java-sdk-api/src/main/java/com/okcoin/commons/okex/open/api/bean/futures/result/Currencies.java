@@ -8,7 +8,7 @@ public class Currencies {
     /**
      * symbol
      */
-    private Integer id;
+    private String id;
     /**
      * currency name
      */
@@ -16,13 +16,13 @@ public class Currencies {
     /**
      * Minimum transaction quantity
      */
-    private Double min_size;
+    private String min_size;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -34,11 +34,11 @@ public class Currencies {
         this.name = name;
     }
 
-    public Double getMin_size() {
+    public String getMin_size() {
         return min_size;
     }
 
-    public void setMin_size(Double min_size) {
+    public void setMin_size(String min_size) {
         this.min_size = min_size;
     }
 }

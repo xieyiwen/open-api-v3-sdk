@@ -12,11 +12,11 @@ public class PriceLimit {
     /**
      * Highest price
      */
-    private Double highest;
+    private String highest;
     /**
      * Lowest price
      */
-    private Double lowest;
+    private String lowest;
 
     private String timestamp;
 
@@ -30,11 +30,11 @@ public class PriceLimit {
 
     public void setTimestamp(String timestamp) { this.timestamp = timestamp; }
 
-    public Double getHighest() { return highest; }
+    public String getHighest() { return highest; }
 
-    public void setHighest(Double highest) { this.highest = highest; }
+    public void setHighest(String highest) { this.highest = highest; }
 
-    public Double getLowest() { return lowest; }
+    public String getLowest() { return lowest; }
 
-    public void setLowest(Double lowest) { this.lowest = lowest; }
+    public void setLowest(String lowest) { this.lowest = lowest; }
 }

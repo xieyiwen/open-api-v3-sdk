@@ -12,7 +12,7 @@ public class Index {
     /**
      * index
      */
-    private Double index = 0.00D;
+    private String index;
     /**
      * time
      */
@@ -22,9 +22,9 @@ public class Index {
 
     public void setInstrument_id(String instrument_id) { this.instrument_id = instrument_id; }
 
-    public Double getIndex() { return index; }
+    public String getIndex() { return index; }
 
-    public void setIndex(Double index) { this.index = index; }
+    public void setIndex(String index) { this.index = index; }
 
     public String getTimestamp() {
         return timestamp;

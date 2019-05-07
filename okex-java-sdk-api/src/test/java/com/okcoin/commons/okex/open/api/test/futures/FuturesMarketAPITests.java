@@ -69,8 +69,8 @@ public class FuturesMarketAPITests extends FuturesAPIBaseTests {
 
     @Test
     public void testGetInstrumentCandles() {
-        String start = "2018-10-24T07:10:00.000Z";
-        String end = "2018-10-24T07:20:00.000Z";
+        String start = "2019-04-24T07:10:00.000Z";
+        String end = "2019-05-24T07:20:00.000Z";
         JSONArray array = marketAPIService.getInstrumentCandles(instrument_id, start, end, 180L);
         toResultString(LOG, "Instrument-Candles", array);
     }

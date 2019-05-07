@@ -60,12 +60,11 @@ interface FuturesTradeAPI {
     Call<JSONObject> getLeverRate(@Path("currency") String currency);
 
     @POST("/api/futures/v3/accounts/{currency}/leverage")
-    Call<JSONObject> changeLevelRate(@Path("currency") String currency,
-                                     @Query("instrument_id") String instrumentId,
-                                     @Query("direction") String direction,
-                                     @Query("leverage") int leverage);
+    Call<JSONObject> changeLeverageOnFixed(@Path("currency") String currency,
+                                            @Body JSONObject changeLeverage);
 
     @POST("/api/futures/v3/accounts/{currency}/leverage")
-    Call<JSONObject> changequancanLevelRate(@Path("currency") String currency,
-                                            @Query("leverage") int leverage);
+    Call<JSONObject> changeLeverageOnCross(@Path("currency") String currency,
+                                            @Body JSONObject changeLeverage);
+
 }
