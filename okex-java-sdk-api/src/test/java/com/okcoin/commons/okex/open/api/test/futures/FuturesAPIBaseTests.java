@@ -18,11 +18,11 @@ public class FuturesAPIBaseTests extends BaseTests {
     public APIConfiguration config() {
         APIConfiguration config = new APIConfiguration();
 
-        config.setEndpoint("https://www.okex.com");
-        config.setApiKey("dfe60992-517d-42b6-802e-1ae9cba2090c");
-        config.setSecretKey("F53133498A68FDC878E11EA9D0C2B5CE");
+        config.setEndpoint("");
+        config.setApiKey("");
+        config.setSecretKey("");
 
-        config.setPassphrase("123456");
+        config.setPassphrase("");
         config.setPrint(true);
         config.setI18n(I18nEnum.ENGLISH);
         return config;
