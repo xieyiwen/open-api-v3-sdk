@@ -10,6 +10,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <netty.version>4.1.36.Final</netty.version>
         <okhttp3.version>3.10.0</okhttp3.version>
         <retrofit2.version>2.3.0</retrofit2.version>
         <fastjson.version>1.2.46</fastjson.version>
@@ -17,9 +18,17 @@
         <commons-collections.version>3.2.2</commons-collections.version>
         <logback.version>1.2.3</logback.version>
         <junit.version>4.12</junit.version>
+        <guava.version>27.1-jre</guava.version>
+        <codec.version>1.12</codec.version>
+        <compress.version>1.18</compress.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
@@ -64,6 +73,21 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${codec.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>${compress.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
