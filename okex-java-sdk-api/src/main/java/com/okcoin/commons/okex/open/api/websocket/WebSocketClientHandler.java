@@ -28,6 +28,7 @@ public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> 
             handshaker.finishHandshake(ch, (FullHttpResponse) msg);
             handshakeFuture.setSuccess();
             this.listener.onWebsocketOpen(this.webSocketClient);
+            this.webSocketClient.beginTimer();
             return;
         }
 

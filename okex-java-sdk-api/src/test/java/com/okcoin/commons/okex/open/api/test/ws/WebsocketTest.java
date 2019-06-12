@@ -39,7 +39,7 @@ public class WebsocketTest {
 
             @Override
             public void onWebsocketPong(WebSocket ws) {
-                ws.sendPing();
+                System.out.println("receive pong");
             }
         });
         ws.connect();

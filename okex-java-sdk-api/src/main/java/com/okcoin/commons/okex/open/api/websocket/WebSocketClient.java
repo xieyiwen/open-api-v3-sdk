@@ -19,18 +19,25 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.Timer;
+import io.netty.util.TimerTask;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class WebSocketClient implements WebSocket {
     private final static HashFunction crc32 = Hashing.crc32();
     private Channel ch;
     private WebSocketListener listener;
     private String URL = "wss://okexcomreal.bafang.com:8443/ws/v3";
+    private Timer timer = new HashedWheelTimer(Executors.defaultThreadFactory());
 
     public WebSocketClient(WebSocketListener listener) {
         this.listener = listener;
@@ -216,5 +223,25 @@ public class WebSocketClient implements WebSocket {
         }
         return builder.toString();
     }
+
+    public void beginTimer(){
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run(Timeout timeout) throws Exception {
+                addTask(this);
+                timerTask();
+            }
+        };
+        addTask(timerTask);
+    }
+
+    private void addTask(TimerTask task){
+        this.timer.newTimeout(task, 5000, TimeUnit.MILLISECONDS);
+    }
+
+    private void timerTask(){
+        this.send("ping");
+    }
+
 
 }
