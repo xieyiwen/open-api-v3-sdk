@@ -40,13 +40,14 @@ public class SpotPrivateChannelTest {
     }
 
     /**
-     * 币币杠杆资产 margin account
+     * 币币杠杆资产
+     * Margin Account Channel
      */
     @Test
     public void marginAccountChannel() {
         //创建一个list集合，添加要订阅的频道名称
         final ArrayList<String> list = new ArrayList<>();
-        list.add("spot/margin_account:LTC-USDT");
+        list.add("spot/margin_account:BTC-USDT");
         webSocketClient.subscribe(list);
         //为保证测试方法不停，需要让线程延迟
         try {
@@ -57,13 +58,14 @@ public class SpotPrivateChannelTest {
     }
 
     /**
-     * 币币资产 account
+     * 币币资产
+     * Account Channel
      */
     @Test
     public void spotAccountChannel() {
         //创建一个list集合，添加要订阅的频道名称
         final ArrayList<String> list = new ArrayList<>();
-        list.add("spot/account:LTC");
+        list.add("spot/account:USDT");
         webSocketClient.subscribe(list);
         //为保证测试方法不停，需要让线程延迟
         try {
@@ -74,7 +76,8 @@ public class SpotPrivateChannelTest {
     }
 
     /**
-     * 订单 order
+     * 订单
+     * Order Channel
      */
     @Test
     public void orderChannel() {

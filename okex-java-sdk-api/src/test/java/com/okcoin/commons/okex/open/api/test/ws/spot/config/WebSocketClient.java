@@ -29,7 +29,8 @@ import java.util.concurrent.TimeUnit;
  **/
 public class WebSocketClient {
     private static WebSocket webSocket = null;
-    private Boolean isLogin = false;
+    private static Boolean isLogin = false;
+    private static Boolean isConnect = false;
 
     /**
      * 与服务器建立连接，参数为服务器的URL
@@ -60,6 +61,7 @@ public class WebSocketClient {
                         .newSingleThreadScheduledExecutor();
                 // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
                 service.scheduleAtFixedRate(runnable , 25 , 25 , TimeUnit.SECONDS);
+                isConnect = true;
                 System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Connected to the server success!");
             }
 
@@ -68,7 +70,7 @@ public class WebSocketClient {
                 System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Receive: " + s);
                 if (null != s && s.contains("login")) {
                     if (s.endsWith("true}")) {
-                        WebSocketClient.this.isLogin = true;
+                        isLogin = true;
                     }
                 }
             }
@@ -78,17 +80,20 @@ public class WebSocketClient {
                 System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Connection is disconnected !!！");
                 webSocket.close(1000 , "Long time not to send and receive messages! ");
                 webSocket = null;
+                isConnect = false;
             }
 
             @Override
             public void onClosed(final WebSocket webSocket , final int code , final String reason) {
                 System.out.println("Connection has been disconnected.");
+                isConnect = false;
             }
 
             @Override
             public void onFailure(final WebSocket webSocket , final Throwable t , final Response response) {
                 t.printStackTrace();
                 System.out.println("Connection failed!");
+                isConnect = false;
             }
 
             @Override
@@ -97,7 +102,7 @@ public class WebSocketClient {
                 System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Receive: " + s);
                 if (null != s && s.contains("login")) {
                     if (s.endsWith("true}")) {
-                        WebSocketClient.this.isLogin = true;
+                        isLogin = true;
                     }
                 }
             }
@@ -200,7 +205,7 @@ public class WebSocketClient {
     }
 
     private void sendMessage(final String str) {
-        if (null != webSocket) {
+        if (null != webSocket && isConnect) {
             try {
                 Thread.sleep(1000);
             } catch (final Exception e) {
@@ -223,9 +228,10 @@ public class WebSocketClient {
         } else {
             System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Please establish a connection before operation !!!");
         }
+        isConnect = false;
     }
 
     public boolean getIsLogin() {
-        return this.isLogin;
+        return isLogin;
     }
 }

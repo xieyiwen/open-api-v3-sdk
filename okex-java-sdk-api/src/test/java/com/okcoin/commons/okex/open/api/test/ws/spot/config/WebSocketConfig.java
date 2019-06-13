@@ -8,10 +8,14 @@ package com.okcoin.commons.okex.open.api.test.ws.spot.config;
  **/
 public class WebSocketConfig {
 
-    private static final String SERVICE_URL = "wss://okexcomreal.bafang.com:10442/ws/v3?_compress=false";
-    private static final String API_KEY = "a6ac6cbb-9090-4ce1-838e-bcc5968da916";
-    private static final String SECRET_KEY = "9474B52A0A62D22774B1A913B3E28F61";
+    //    private static final String SERVICE_URL = "wss://okexcomreal.bafang.com:10442/ws/v3?_compress=false";
+    //    private static final String API_KEY = "a6ac6cbb-9090-4ce1-838e-bcc5968da916";
+    //    private static final String SECRET_KEY = "9474B52A0A62D22774B1A913B3E28F61";
     private static final String PASSPHRASE = "123456";
+
+    private static final String SERVICE_URL = "ws://dev-okex.docker.okcoin-inc.com/ws/v3?_compress=false";
+    private static final String API_KEY = "e0882d83-8417-4613-9d3d-547b68d2e073";
+    private static final String SECRET_KEY = "06C65AF7ED02CA4D84458196581BDBCE";
 
     public static void publicConnect(final WebSocketClient webSocketClient) {
         webSocketClient.connection(SERVICE_URL);
