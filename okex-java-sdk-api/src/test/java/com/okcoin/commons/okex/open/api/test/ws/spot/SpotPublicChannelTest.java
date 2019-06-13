@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 /**
+ * 公共频道
  * public channel
  *
  * @author oker
@@ -29,7 +30,8 @@ public class SpotPublicChannelTest {
     }
 
     /**
-     * 行情频道 ticker
+     * 行情频道
+     * Ticker Channel
      */
     @Test
     public void tickerChannel() {
@@ -47,7 +49,8 @@ public class SpotPublicChannelTest {
     }
 
     /**
-     * k线频道 kline
+     * k线频道
+     * Kline Channel
      */
     @Test
     public void klineChannel() {
@@ -65,7 +68,8 @@ public class SpotPublicChannelTest {
     }
 
     /**
-     * 成交频道 trade
+     * 成交频道
+     * Trade Channel
      */
     @Test
     public void tradeChannel() {
@@ -83,7 +87,8 @@ public class SpotPublicChannelTest {
     }
 
     /**
-     * 5档深度 depth5
+     * 5档深度
+     * Depth5 Channel
      */
     @Test
     public void depth5Channel() {
@@ -101,7 +106,8 @@ public class SpotPublicChannelTest {
     }
 
     /**
-     * 深度 depth
+     * 深度
+     * Depth Channel
      */
     @Test
     public void depthChannel() {

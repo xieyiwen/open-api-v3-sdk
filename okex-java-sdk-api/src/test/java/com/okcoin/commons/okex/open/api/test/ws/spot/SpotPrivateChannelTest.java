@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 /**
+ * 需要登录的频道
  * private channel
  *
  * @author oker
@@ -21,7 +22,7 @@ public class SpotPrivateChannelTest {
     public void connect() {
         WebSocketConfig.loginConnect(webSocketClient);
         while (true) {
-            if (webSocketClient.getFlag()) {
+            if (webSocketClient.getIsLogin()) {
                 return;
             } else {
                 try {

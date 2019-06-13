@@ -29,9 +29,14 @@ import java.util.concurrent.TimeUnit;
  **/
 public class WebSocketClient {
     private static WebSocket webSocket = null;
-    private Boolean flag = false;
+    private Boolean isLogin = false;
 
-    //与服务器建立连接，参数为服务器的URL
+    /**
+     * 与服务器建立连接，参数为服务器的URL
+     * connect server
+     *
+     * @param url
+     */
     public void connection(final String url) {
 
         final OkHttpClient client = new OkHttpClient.Builder()
@@ -63,7 +68,7 @@ public class WebSocketClient {
                 System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Receive: " + s);
                 if (null != s && s.contains("login")) {
                     if (s.endsWith("true}")) {
-                        WebSocketClient.this.flag = true;
+                        WebSocketClient.this.isLogin = true;
                     }
                 }
             }
@@ -92,14 +97,20 @@ public class WebSocketClient {
                 System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Receive: " + s);
                 if (null != s && s.contains("login")) {
                     if (s.endsWith("true}")) {
-                        WebSocketClient.this.flag = true;
+                        WebSocketClient.this.isLogin = true;
                     }
                 }
             }
         });
     }
 
-    // 解压函数
+    /**
+     * 解压函数
+     * Decompression function
+     *
+     * @param bytes
+     * @return
+     */
     private static String uncompress(final byte[] bytes) {
         try (final ByteArrayOutputStream out = new ByteArrayOutputStream();
              final ByteArrayInputStream in = new ByteArrayInputStream(bytes);
@@ -115,8 +126,15 @@ public class WebSocketClient {
         }
     }
 
-    //获得sign
-    private static String sha256_HMAC(final String message , final String secret) {
+    /**
+     * 获得sign
+     * sign
+     *
+     * @param message
+     * @param secret
+     * @return
+     */
+    private String sha256_HMAC(final String message , final String secret) {
         String hash = "";
         try {
             final Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
@@ -130,13 +148,24 @@ public class WebSocketClient {
         return hash;
     }
 
-    private static String listToJson(final List<String> list) {
+    /**
+     * @param list
+     * @return
+     */
+    private String listToJson(final List<String> list) {
         final JSONArray jsonArray = new JSONArray();
         jsonArray.addAll(list);
         return jsonArray.toJSONString();
     }
 
-    //登录
+    /**
+     * 登录
+     * login
+     *
+     * @param apiKey
+     * @param passPhrase
+     * @param secretKey
+     */
     public void login(final String apiKey , final String passPhrase , final String secretKey) {
         final String timestamp = (Double.parseDouble(DateUtils.getEpochTime()) + 28800) + "";
         final String message = timestamp + "GET" + "/users/self/verify";
@@ -146,14 +175,24 @@ public class WebSocketClient {
     }
 
 
-    //订阅，参数为频道组成的集合
+    /**
+     * 订阅，参数为频道组成的集合
+     * Bulk Subscription
+     *
+     * @param list
+     */
     public void subscribe(final List<String> list) {
         final String s = listToJson(list);
         final String str = "{\"op\": \"subscribe\", \"args\":" + s + "}";
         sendMessage(str);
     }
 
-    //取消订阅，参数为频道组成的集合
+    /**
+     * 取消订阅，参数为频道组成的集合
+     * unsubscribe
+     *
+     * @param list
+     */
     public void unsubscribe(final List<String> list) {
         final String s = listToJson(list);
         final String str = "{\"op\": \"unsubscribe\", \"args\":" + s + "}";
@@ -174,7 +213,10 @@ public class WebSocketClient {
         }
     }
 
-    //断开连接
+    /**
+     * 断开连接
+     * Close Connection
+     */
     public void closeConnection() {
         if (null != webSocket) {
             webSocket.close(1000 , "User close connect !!!");
@@ -183,7 +225,7 @@ public class WebSocketClient {
         }
     }
 
-    public boolean getFlag() {
-        return this.flag;
+    public boolean getIsLogin() {
+        return this.isLogin;
     }
 }
