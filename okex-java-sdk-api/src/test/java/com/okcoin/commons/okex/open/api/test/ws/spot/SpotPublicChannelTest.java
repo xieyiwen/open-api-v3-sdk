@@ -2,11 +2,14 @@ package com.okcoin.commons.okex.open.api.test.ws.spot;
 
 import com.okcoin.commons.okex.open.api.test.ws.spot.config.WebSocketClient;
 import com.okcoin.commons.okex.open.api.test.ws.spot.config.WebSocketConfig;
+import com.okcoin.commons.okex.open.api.utils.DateUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * 公共频道
@@ -26,6 +29,7 @@ public class SpotPublicChannelTest {
 
     @After
     public void close() {
+        System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " close connect!");
         webSocketClient.closeConnection();
     }
 

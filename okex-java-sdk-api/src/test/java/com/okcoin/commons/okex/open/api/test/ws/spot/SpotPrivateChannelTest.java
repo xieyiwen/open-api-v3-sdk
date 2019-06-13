@@ -2,11 +2,14 @@ package com.okcoin.commons.okex.open.api.test.ws.spot;
 
 import com.okcoin.commons.okex.open.api.test.ws.spot.config.WebSocketClient;
 import com.okcoin.commons.okex.open.api.test.ws.spot.config.WebSocketConfig;
+import com.okcoin.commons.okex.open.api.utils.DateUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * 需要登录的频道
@@ -30,12 +33,16 @@ public class SpotPrivateChannelTest {
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
+                if (!webSocketClient.getIsConnect()) {
+                    return;
+                }
             }
         }
     }
 
     @After
     public void close() {
+        System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " close connect!");
         webSocketClient.closeConnection();
     }
 
@@ -45,6 +52,9 @@ public class SpotPrivateChannelTest {
      */
     @Test
     public void marginAccountChannel() {
+        if (!webSocketClient.getIsConnect()) {
+            return;
+        }
         //创建一个list集合，添加要订阅的频道名称
         final ArrayList<String> list = new ArrayList<>();
         list.add("spot/margin_account:BTC-USDT");
@@ -63,6 +73,9 @@ public class SpotPrivateChannelTest {
      */
     @Test
     public void spotAccountChannel() {
+        if (!webSocketClient.getIsConnect()) {
+            return;
+        }
         //创建一个list集合，添加要订阅的频道名称
         final ArrayList<String> list = new ArrayList<>();
         list.add("spot/account:USDT");

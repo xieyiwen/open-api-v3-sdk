@@ -39,17 +39,17 @@ public class WebSocketClient {
      * @param bytes
      * @return
      */
-    private static String uncompress(byte[] bytes) {
+    private static String uncompress(final byte[] bytes) {
         try (final ByteArrayOutputStream out = new ByteArrayOutputStream();
              final ByteArrayInputStream in = new ByteArrayInputStream(bytes);
              final Deflate64CompressorInputStream zin = new Deflate64CompressorInputStream(in)) {
-            byte[] buffer = new byte[1024];
+            final byte[] buffer = new byte[1024];
             int offset;
             while (-1 != (offset = zin.read(buffer))) {
                 out.write(buffer , 0 , offset);
             }
             return out.toString();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -60,35 +60,36 @@ public class WebSocketClient {
      *
      * @param url
      */
-    public void connection(String url) {
+    public void connection(final String url) {
 
-        OkHttpClient client = new OkHttpClient.Builder()
+        final OkHttpClient client = new OkHttpClient.Builder()
                 .readTimeout(10 , TimeUnit.SECONDS)
                 .build();
-        Request request = new Request.Builder()
+        final Request request = new Request.Builder()
                 .url(url)
                 .build();
         webSocket = client.newWebSocket(request , new WebSocketListener() {
             @Override
-            public void onOpen(WebSocket webSocket , Response response) {
+            public void onOpen(final WebSocket webSocket , final Response response) {
                 isConnect = true;
+                System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Connected to the server success!");
+
                 //连接成功后，设置定时器，每隔25，自动向服务器发送心跳，保持与服务器连接
-                Runnable runnable = new Runnable() {
+                final Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
                         // task to run goes here
                         sendMessage("ping");
                     }
                 };
-                ScheduledExecutorService service = Executors
+                final ScheduledExecutorService service = Executors
                         .newSingleThreadScheduledExecutor();
                 // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
                 service.scheduleAtFixedRate(runnable , 25 , 25 , TimeUnit.SECONDS);
-                System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Connected to the server success!");
             }
 
             @Override
-            public void onMessage(WebSocket webSocket , String s) {
+            public void onMessage(final WebSocket webSocket , final String s) {
                 System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Receive: " + s);
                 if (null != s && s.contains("login")) {
                     if (s.endsWith("true}")) {
@@ -98,7 +99,7 @@ public class WebSocketClient {
             }
 
             @Override
-            public void onClosing(WebSocket webSocket , int code , String reason) {
+            public void onClosing(WebSocket webSocket , final int code , final String reason) {
                 System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Connection is disconnected !!！");
                 webSocket.close(1000 , "Long time not to send and receive messages! ");
                 webSocket = null;
@@ -106,21 +107,21 @@ public class WebSocketClient {
             }
 
             @Override
-            public void onClosed(WebSocket webSocket , int code , String reason) {
+            public void onClosed(final WebSocket webSocket , final int code , final String reason) {
                 System.out.println("Connection has been disconnected.");
                 isConnect = false;
             }
 
             @Override
-            public void onFailure(WebSocket webSocket , Throwable t , Response response) {
+            public void onFailure(final WebSocket webSocket , final Throwable t , final Response response) {
                 t.printStackTrace();
                 System.out.println("Connection failed!");
                 isConnect = false;
             }
 
             @Override
-            public void onMessage(WebSocket webSocket , ByteString bytes) {
-                String s = WebSocketClient.uncompress(bytes.toByteArray());
+            public void onMessage(final WebSocket webSocket , final ByteString bytes) {
+                final String s = WebSocketClient.uncompress(bytes.toByteArray());
                 System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Receive: " + s);
                 if (null != s && s.contains("login")) {
                     if (s.endsWith("true}")) {
@@ -139,15 +140,15 @@ public class WebSocketClient {
      * @param secret
      * @return
      */
-    private String sha256_HMAC(String message , String secret) {
+    private String sha256_HMAC(final String message , final String secret) {
         String hash = "";
         try {
-            Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(CharsetEnum.UTF_8.charset()) , "HmacSHA256");
+            final Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+            final SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(CharsetEnum.UTF_8.charset()) , "HmacSHA256");
             sha256_HMAC.init(secret_key);
-            byte[] bytes = sha256_HMAC.doFinal(message.getBytes(CharsetEnum.UTF_8.charset()));
+            final byte[] bytes = sha256_HMAC.doFinal(message.getBytes(CharsetEnum.UTF_8.charset()));
             hash = Base64.getEncoder().encodeToString(bytes);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + "Error HmacSHA256 ===========" + e.getMessage());
         }
         return hash;
@@ -157,8 +158,8 @@ public class WebSocketClient {
      * @param list
      * @return
      */
-    private String listToJson(List<String> list) {
-        JSONArray jsonArray = new JSONArray();
+    private String listToJson(final List<String> list) {
+        final JSONArray jsonArray = new JSONArray();
         jsonArray.addAll(list);
         return jsonArray.toJSONString();
     }
@@ -171,11 +172,11 @@ public class WebSocketClient {
      * @param passPhrase
      * @param secretKey
      */
-    public void login(String apiKey , String passPhrase , String secretKey) {
-        String timestamp = (Double.parseDouble(DateUtils.getEpochTime()) + 28800) + "";
-        String message = timestamp + "GET" + "/users/self/verify";
-        String sign = sha256_HMAC(message , secretKey);
-        String str = "{\"op\"" + ":" + "\"login\"" + "," + "\"args\"" + ":" + "[" + "\"" + apiKey + "\"" + "," + "\"" + passPhrase + "\"" + "," + "\"" + timestamp + "\"" + "," + "\"" + sign + "\"" + "]}";
+    public void login(final String apiKey , final String passPhrase , final String secretKey) {
+        final String timestamp = (Double.parseDouble(DateUtils.getEpochTime()) + 28800) + "";
+        final String message = timestamp + "GET" + "/users/self/verify";
+        final String sign = sha256_HMAC(message , secretKey);
+        final String str = "{\"op\"" + ":" + "\"login\"" + "," + "\"args\"" + ":" + "[" + "\"" + apiKey + "\"" + "," + "\"" + passPhrase + "\"" + "," + "\"" + timestamp + "\"" + "," + "\"" + sign + "\"" + "]}";
         sendMessage(str);
     }
 
@@ -186,9 +187,9 @@ public class WebSocketClient {
      *
      * @param list
      */
-    public void subscribe(List<String> list) {
-        String s = listToJson(list);
-        String str = "{\"op\": \"subscribe\", \"args\":" + s + "}";
+    public void subscribe(final List<String> list) {
+        final String s = listToJson(list);
+        final String str = "{\"op\": \"subscribe\", \"args\":" + s + "}";
         sendMessage(str);
     }
 
@@ -198,24 +199,26 @@ public class WebSocketClient {
      *
      * @param list
      */
-    public void unsubscribe(List<String> list) {
-        String s = listToJson(list);
-        String str = "{\"op\": \"unsubscribe\", \"args\":" + s + "}";
+    public void unsubscribe(final List<String> list) {
+        final String s = listToJson(list);
+        final String str = "{\"op\": \"unsubscribe\", \"args\":" + s + "}";
         sendMessage(str);
     }
 
-    private void sendMessage(String str) {
+    private void sendMessage(final String str) {
         if (null != webSocket) {
             try {
                 Thread.sleep(1000);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
             System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Send: " + str);
-            webSocket.send(str);
-        } else {
-            System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Please establish a connection before operation !!!");
+            if (isConnect) {
+                webSocket.send(str);
+                return;
+            }
         }
+        System.out.println(DateFormatUtils.format(new Date() , DateUtils.TIME_STYLE_S4) + " Please establish a connection before operation !!!");
     }
 
     /**
@@ -233,5 +236,9 @@ public class WebSocketClient {
 
     public boolean getIsLogin() {
         return isLogin;
+    }
+
+    public boolean getIsConnect() {
+        return isConnect;
     }
 }
