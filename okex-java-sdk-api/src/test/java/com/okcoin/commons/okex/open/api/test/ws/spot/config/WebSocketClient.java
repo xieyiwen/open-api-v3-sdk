@@ -205,7 +205,7 @@ public class WebSocketClient {
     }
 
     private void sendMessage(String str) {
-        if (null != webSocket && isConnect) {
+        if (null != webSocket) {
             try {
                 Thread.sleep(1000);
             } catch (Exception e) {
