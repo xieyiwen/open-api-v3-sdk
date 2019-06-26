@@ -1,13 +1,11 @@
 package com.okcoin.commons.okex.open.api.websocket;
 
+import io.netty.buffer.*;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
-import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.util.zip.Inflater;
 
 public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> {
     private ChannelPromise handshakeFuture;
@@ -88,26 +86,34 @@ public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> 
     public void channelInactive(ChannelHandlerContext ctx) {
     }
 
-    private static String uncompress(byte[] bytes) {
-        try (final ByteArrayOutputStream out = new ByteArrayOutputStream();
-             final ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-             final Deflate64CompressorInputStream zin = new Deflate64CompressorInputStream(in)) {
-            final byte[] buffer = new byte[1024];
-            int offset;
-            while (-1 != (offset = zin.read(buffer))) {
-                out.write(buffer, 0, offset);
+    private static String uncompress(ByteBuf buf) {
+        try {
+            byte[] temp = new byte[buf.readableBytes()];
+            ByteBufInputStream bis = new ByteBufInputStream(buf);
+            bis.read(temp);
+            bis.close();
+            Inflater decompresser = new Inflater(true);
+            decompresser.setInput(temp, 0, temp.length);
+            StringBuilder sb = new StringBuilder();
+            byte[] result = new byte[1024];
+            while (!decompresser.finished()) {
+                int resultLength = decompresser.inflate(result);
+                sb.append(new String(result, 0, resultLength, "UTF-8"));
             }
-            return out.toString();
-        } catch (final Exception e) {
-            throw new RuntimeException(e);
+            decompresser.end();
+            return sb.toString();
+        }catch (Exception e) {
+            e.printStackTrace();
         }
+        return "";
     }
 
-    private String decode(Object msg){
+    private static String decode(Object msg){
         BinaryWebSocketFrame frameBinary = (BinaryWebSocketFrame)msg;
         byte[] bytes = new byte[frameBinary.content().readableBytes()];
         frameBinary.content().readBytes(bytes);
-        String str = uncompress(bytes);
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes);
+        String str = uncompress(byteBuf);
         return str;
     }
 }
