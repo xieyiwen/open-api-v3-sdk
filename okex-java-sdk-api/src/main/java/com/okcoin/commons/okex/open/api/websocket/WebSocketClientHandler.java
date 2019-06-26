@@ -57,6 +57,14 @@ public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> 
                 this.listener.onTextMessage(webSocketClient, msgStr);
             }
         }
+        else if (frame instanceof TextWebSocketFrame) {
+            String txt = ((TextWebSocketFrame) frame).text();
+            if (txt.equals("pong")) {
+                this.listener.onWebsocketPong(webSocketClient);
+            } else {
+                this.listener.onTextMessage(webSocketClient, txt);
+            }
+        }
         else {
             this.listener.handleCallbackError(webSocketClient, new RuntimeException("cannot decode message"));
         }
