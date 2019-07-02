@@ -21,7 +21,7 @@ public class OrderResult {
      */
     private boolean result;
 
-    private int error_code;
+    private String error_code;
     private String error_message;
 
     public String getClient_oid() {
@@ -48,11 +48,11 @@ public class OrderResult {
         this.result = result;
     }
 
-    public int getError_code() {
+    public String getError_code() {
         return error_code;
     }
 
-    public void setError_code(int error_code) {
+    public void setError_code(String error_code) {
         this.error_code = error_code;
     }
 

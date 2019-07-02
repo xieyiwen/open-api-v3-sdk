@@ -53,7 +53,7 @@ class LeverAPI(Client):
 
     def get_specific_borrow_coin(self, instrument_id, status, froms, to, limit):
         params = {'from': froms, 'to': to, 'limit': limit, 'status': status}
-        return self._request_with_params(GET, LEVER_BORROW_RECORD + str(instrument_id) + '/borrowed', params, cursor=True)
+        return self._request_with_params(GET, LEVER_SPECIFIC_CONFIG  + str(instrument_id) + '/borrowed', params, cursor=True)
 
     # borrow coin
     def borrow_coin(self, instrument_id, currency, amount):
@@ -61,14 +61,14 @@ class LeverAPI(Client):
         return self._request_with_params(POST, LEVER_BORROW_COIN, params)
 
     # repayment coin
-    def repayment_coin(self, borrow_id, instrument_id, currency, amount):
+    def repayment_coin(self, borrow_id='', instrument_id='', currency='', amount=''):
         params = {'instrument_id': instrument_id, 'currency': currency, 'amount': amount, 'borrow_id': borrow_id}
         return self._request_with_params(POST, LEVER_REPAYMENT_COIN, params)
 
     # take order
-    def take_order(self, instrument_id, otype, side, size='', client_oid='', price='', margin_trading='', notional=''):
+    def take_order(self, instrument_id, otype, side, size='', client_oid='', price='', margin_trading='', notional='',order_type = ''):
         params = {'instrument_id': instrument_id, 'type': otype, 'side': side,
-                  'client_oid': client_oid}
+                  'client_oid': client_oid,'order_type':order_type}
         if otype == 'limit':
             params['price'] = price
             params['size'] = size

@@ -1,6 +1,8 @@
 package com.okcoin.commons.okex.open.api.test.futures;
 
 import com.okcoin.commons.okex.open.api.config.APIConfiguration;
+import com.okcoin.commons.okex.open.api.enums.FuturesCurrenciesEnum;
+import com.okcoin.commons.okex.open.api.enums.FuturesDirectionEnum;
 import com.okcoin.commons.okex.open.api.enums.I18nEnum;
 import com.okcoin.commons.okex.open.api.test.BaseTests;
 
@@ -16,25 +18,26 @@ public class FuturesAPIBaseTests extends BaseTests {
     public APIConfiguration config() {
         APIConfiguration config = new APIConfiguration();
 
-        config.setEndpoint("https://www.okex.com");
-
-
+        config.setEndpoint("");
         config.setApiKey("");
         config.setSecretKey("");
-
 
         config.setPassphrase("");
         config.setPrint(true);
         config.setI18n(I18nEnum.ENGLISH);
-
         return config;
     }
 
+    /**
+     * Public parameters
+     */
     int from = 0;
     int to = 0;
     int limit = 20;
 
-    String instrument_id = "EOS-USD-181102";
-
+    String instrument_id = "EOS-USD-190628";
+    String currency = FuturesCurrenciesEnum.BTC.name();
+    String direction = FuturesDirectionEnum.LONG.getDirection();
+    String leverage = "20";
 
 }

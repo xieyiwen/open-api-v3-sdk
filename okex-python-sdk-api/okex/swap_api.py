@@ -50,11 +50,17 @@ class SwapAPI(Client):
         params = {'instrument_id': instrument_id, 'order_data': order_data}
         return self._request_with_params(POST, SWAP_ORDERS, params)
 
-    def revoke_order(self, order_id, instrument_id):
-        return self._request_without_params(POST, SWAP_CANCEL_ORDER+str(instrument_id)+'/'+str(order_id))
+    def revoke_order(self, order_id='',client_oid='', instrument_id='BTC-USD-SWAP'):
+        if(order_id):
+            return self._request_without_params(POST, SWAP_CANCEL_ORDER+str(instrument_id)+'/'+str(order_id))
+        elif client_oid:
+            return self._request_without_params(POST, SWAP_CANCEL_ORDER + str(instrument_id) + '/' + str(client_oid))
 
-    def revoke_orders(self, ids, instrument_id):
-        params = {'ids': ids}
+    def revoke_orders(self, ids='',client_oids='', instrument_id=''):
+        if ids:
+            params = {'ids': ids}
+        elif client_oids:
+            params = {'client_oids':client_oids}
         return self._request_with_params(POST, SWAP_CANCEL_ORDERS+str(instrument_id), params)
 
     def get_order_list(self, status, instrument_id, froms='', to='', limit=''):
@@ -67,11 +73,17 @@ class SwapAPI(Client):
             params['limit'] = limit
         return self._request_with_params(GET, SWAP_ORDERS+'/'+str(instrument_id), params)
 
-    def get_order_info(self, instrument_id, order_id):
-        return self._request_without_params(GET, SWAP_ORDERS+'/'+str(instrument_id)+'/'+str(order_id))
+    def get_order_info(self, instrument_id='', order_id='',client_oid = ''):
+        if order_id:
+            return self._request_without_params(GET, SWAP_ORDERS+'/'+str(instrument_id)+'/'+str(order_id))
+        elif client_oid:
+            return self._request_without_params(GET, SWAP_ORDERS + '/' + str(instrument_id) + '/' + str(client_oid))
 
-    def get_fills(self, order_id, instrument_id, froms='', to='', limit=''):
-        params = {'order_id': order_id, 'instrument_id': instrument_id}
+    def get_fills(self, order_id='',client_oid='', instrument_id='', froms='', to='', limit=''):
+        if order_id:
+            params = {'order_id': order_id, 'instrument_id': instrument_id}
+        if client_oid:
+            params = {'client_oid': client_oid, 'instrument_id': instrument_id}
         if froms:
             params['from'] = froms
         if to:

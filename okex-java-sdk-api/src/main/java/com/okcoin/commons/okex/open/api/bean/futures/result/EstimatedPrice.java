@@ -12,7 +12,7 @@ public class EstimatedPrice {
     /**
      * Estimated price
      */
-    private Double settlement_price;
+    private String settlement_price;
     /**
      * time
      */
@@ -30,7 +30,7 @@ public class EstimatedPrice {
 
     public void setInstrument_id(String instrument_id) { this.instrument_id = instrument_id; }
 
-    public Double getSettlement_price() { return settlement_price; }
+    public String getSettlement_price() { return settlement_price; }
 
-    public void setSettlement_price(Double settlement_price) { this.settlement_price = settlement_price; }
+    public void setSettlement_price(String settlement_price) { this.settlement_price = settlement_price; }
 }

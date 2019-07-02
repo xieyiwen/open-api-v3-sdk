@@ -7,7 +7,6 @@ import com.okcoin.commons.okex.open.api.bean.futures.param.Order;
 import com.okcoin.commons.okex.open.api.bean.futures.param.Orders;
 import com.okcoin.commons.okex.open.api.bean.futures.param.OrdersItem;
 import com.okcoin.commons.okex.open.api.bean.futures.result.OrderResult;
-import com.okcoin.commons.okex.open.api.enums.FuturesCurrenciesEnum;
 import com.okcoin.commons.okex.open.api.enums.FuturesTransactionTypeEnum;
 import com.okcoin.commons.okex.open.api.service.futures.FuturesTradeAPIService;
 import com.okcoin.commons.okex.open.api.service.futures.impl.FuturesTradeAPIServiceImpl;
@@ -33,7 +32,6 @@ public class FuturesTradeAPITests extends FuturesAPIBaseTests {
 
     private FuturesTradeAPIService tradeAPIService;
 
-    String currency = FuturesCurrenciesEnum.EOS.name();
 
     @Before
     public void before() {
@@ -86,7 +84,7 @@ public class FuturesTradeAPITests extends FuturesAPIBaseTests {
         order.setPrice(10000D);
         order.setSize(1);
         order.setMatch_price(0);
-        order.setLeverage(10D);
+        order.setLeverage(20D);
         OrderResult result = tradeAPIService.order(order);
         toResultString(LOG, "New-Order", result);
     }
@@ -95,7 +93,7 @@ public class FuturesTradeAPITests extends FuturesAPIBaseTests {
     public void testOrders() {
         Orders orders = new Orders();
         orders.setinstrument_id(instrument_id);
-        orders.setLeverage(10.0);
+        orders.setLeverage(20.0);
 
         List<OrdersItem> orders_data = new ArrayList<>();
 
@@ -132,21 +130,21 @@ public class FuturesTradeAPITests extends FuturesAPIBaseTests {
 
     @Test
     public void testGetOrders() {
-        int status = 0;
+        int status = 2;
         JSONObject result = tradeAPIService.getOrders(instrument_id, status, 1, 2, 3);
         toResultString(LOG, "Get-Orders", result);
     }
 
     @Test
     public void testGetOrder() {
-        long orderId = 1692325459303424L;
+        long orderId = 2784024652491776L;
         JSONObject result = tradeAPIService.getOrder(instrument_id, orderId);
         toResultString(LOG, "Get-Order", result);
     }
 
     @Test
     public void testCancelOrder() {
-        long orderId = 1692325459303424L;
+        long orderId = 2784024652491776L;
         JSONObject result = tradeAPIService.cancelOrder(instrument_id, orderId);
         toResultString(LOG, "Cancel-Instrument-Order", result);
     }
@@ -155,7 +153,7 @@ public class FuturesTradeAPITests extends FuturesAPIBaseTests {
     public void testCancelOrders() {
         CancelOrders cancelOrders = new CancelOrders();
         List<Long> list = new ArrayList<>();
-        list.add(1685508253675520L);
+        list.add(2784028742460416L);
         list.add(1685508253675520L);
         list.add(1707122518266880L);
         list.add(1707122518266880L);
@@ -166,27 +164,27 @@ public class FuturesTradeAPITests extends FuturesAPIBaseTests {
 
     @Test
     public void testGetFills() {
-        long orderId = 1707122518266880L;
+        long orderId = 2784020415650816L;
         JSONArray result = tradeAPIService.getFills(instrument_id, orderId, from, to, 2);
         toResultString(LOG, "Get-Fills", result);
     }
 
     @Test
-    public void testGetLeverRate() {
+    public void testGetLeverage() {
         JSONObject jsonObject = tradeAPIService.getInstrumentLeverRate(currency);
-        toResultString(LOG, "LeverRate", jsonObject);
+        toResultString(LOG, "Get-Leverage", jsonObject);
     }
 
     @Test
-    public void testChangelevelRate() {
-        JSONObject jsonObject = tradeAPIService.changeLevelRate(currency, instrument_id, "short", 20);
-        toResultString(LOG, "LeverRate", jsonObject);
+    public void testChangeLeverageOnFixed() {
+        JSONObject jsonObject = tradeAPIService.changeLeverageOnFixed(currency, instrument_id, direction, leverage);
+        toResultString(LOG, "Change-fixed-Leverage", jsonObject);
     }
 
     @Test
-    public void testquancangChangelevelRate() {
-        JSONObject jsonObject = tradeAPIService.changequancangLevelRate(currency, 20);
-        toResultString(LOG, "LeverRate", jsonObject);
+    public void testChangeLeverageOnCross() {
+        JSONObject jsonObject = tradeAPIService.changeLeverageOnCross(currency, leverage);
+        toResultString(LOG, "Change-cross-Leverage", jsonObject);
     }
 
 

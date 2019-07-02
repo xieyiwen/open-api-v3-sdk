@@ -12,7 +12,7 @@ public class Holds {
     /**
      * all of position
      */
-    private Integer amount;
+    private String amount;
 
     private String timestamp;
 
@@ -20,11 +20,11 @@ public class Holds {
 
     public void setInstrument_id(String instrument_id) { this.instrument_id = instrument_id; }
 
-    public Integer getAmount() {
+    public String getAmount() {
         return amount;
     }
 
-    public void setAmount(Integer amount) {
+    public void setAmount(String amount) {
         this.amount = amount;
     }
 

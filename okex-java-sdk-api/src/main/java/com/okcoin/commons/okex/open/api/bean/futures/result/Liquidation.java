@@ -12,45 +12,45 @@ public class Liquidation {
     /**
      * order price
      */
-    private Double price;
+    private String price;
     /**
      * order quantity(unit: contract)
      */
-    private Double size;
+    private String size;
     /**
      * The execution type {@link com.okcoin.commons.okex.open.api.enums.FuturesTransactionTypeEnum}
      */
-    private Integer type;
+    private String type;
     /**
      * user loss due to forced liquidation
      */
-    private Double loss;
+    private String loss;
     /**
      * create date
      */
     private String created_at;
 
-    public Double getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 
-    public Integer getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public Double getLoss() {
+    public String getLoss() {
         return loss;
     }
 
-    public void setLoss(Double loss) {
+    public void setLoss(String loss) {
         this.loss = loss;
     }
 
@@ -58,9 +58,9 @@ public class Liquidation {
 
     public void setInstrument_id(String instrument_id) { this.instrument_id = instrument_id; }
 
-    public Double getSize() { return size; }
+    public String getSize() { return size; }
 
-    public void setSize(Double size) { this.size = size; }
+    public void setSize(String size) { this.size = size; }
     public String getCreated_at() { return created_at; }
 
     public void setCreated_at(String created_at) { this.created_at = created_at; }

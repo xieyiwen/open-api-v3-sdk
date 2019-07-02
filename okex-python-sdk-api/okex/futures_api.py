@@ -28,13 +28,14 @@ class FutureAPI(Client):
         return self._request_without_params(GET, FUTURE_GET_LEVERAGE + str(symbol) + '/leverage')
 
     # set leverage
-    def set_leverage(self, symbol, instrument_id='', direction='', leverage=10):
-        #params = {'margin_mode': margin_mode, 'instrument_id': instrument_id, 'direction': direction, 'ratio': ratio}
-        params = {'instrument_id': instrument_id, 'direction': direction, 'leverage': leverage}
-        if symbol:
-            return self._request_with_params(POST, FUTURE_SET_LEVERAGE + str(symbol) + '/leverage', params)
-        else:
-            return self._request_with_params(POST, FUTURE_SET_LEVERAGE + 'leverage', params)
+    def set_leverage(self, currency, leverage, instrument_id='', direction=''):
+        params = {'leverage': leverage}
+        if instrument_id:
+            params['instrument_id'] = instrument_id
+        if direction:
+            params['direction'] = direction
+        print(params)
+        return self._request_with_params(POST, FUTURE_SET_LEVERAGE + str(currency) + '/leverage', params)
 
     # query ledger
     def get_ledger(self, symbol):
@@ -50,7 +51,7 @@ class FutureAPI(Client):
 
     # take order
     def take_order(self, client_oid, instrument_id, otype, price, size, match_price, leverage):
-        # params = {'instrument_id': instrument_id, 'otype': otype, 'price': price, 'order': order_Qty, 'match_price': match_price, 'client_id': client_id}
+
         params = {'client_oid': client_oid, 'instrument_id': instrument_id, 'type': otype, 'price': price, 'size': size, 'match_price':match_price, 'leverage': leverage}
         return self._request_with_params(POST, FUTURE_ORDER, params)
 
@@ -60,13 +61,19 @@ class FutureAPI(Client):
         return self._request_with_params(POST, FUTURE_ORDERS, params)
 
     # revoke order
-    def revoke_order(self, instrument_id, order_id):
-        return self._request_without_params(POST, FUTURE_REVOKE_ORDER + str(instrument_id) + '/' + str(order_id))
+    def revoke_order(self, instrument_id, order_id='',client_oid=''):
+        if order_id:
+            return self._request_without_params(POST, FUTURE_REVOKE_ORDER + str(instrument_id) + '/' + str(order_id))
+        elif client_oid:
+            return self._request_without_params(POST, FUTURE_REVOKE_ORDER + str(instrument_id) + '/' + str(client_oid))
 
     # revoke orders
 
-    def revoke_orders(self, instrument_id, order_ids):
-        params = {'order_ids': order_ids}
+    def revoke_orders(self, instrument_id, order_ids='',client_oids=''):
+        if order_ids:
+            params = {'order_ids': order_ids}
+        elif client_oids:
+            params = {'client_oids': client_oids}
         return self._request_with_params(POST, FUTURE_REVOKE_ORDERS+str(instrument_id), params)
 
     # query order list
@@ -75,7 +82,7 @@ class FutureAPI(Client):
     #    return self._request_with_params(GET, FUTURE_ORDERS_LIST, params)
 
     # query order list
-    def get_order_list(self, status, froms, to, limit, instrument_id=''):
+    def get_order_list(self, status,  instrument_id='',froms=1, to=4, limit=100):
         params = {'status': status, 'instrument_id': instrument_id}
         if froms:
             params['from'] = froms
@@ -86,11 +93,14 @@ class FutureAPI(Client):
         return self._request_with_params(GET, FUTURE_ORDERS_LIST+'/'+str(instrument_id), params)
 
     # query order info
-    def get_order_info(self, order_id, instrument_id):
-        return self._request_without_params(GET, FUTURE_ORDER_INFO + str(instrument_id) + '/' + str(order_id))
+    def get_order_info(self, instrument_id,order_id='', client_oid=''):
+        if order_id:
+            return self._request_without_params(GET, FUTURE_ORDER_INFO + str(instrument_id) + '/' + str(order_id))
+        elif client_oid:
+            return self._request_without_params(GET, FUTURE_ORDER_INFO + str(instrument_id) + '/' + str(client_oid))
 
     # query fills
-    def get_fills(self, order_id, instrument_id, froms, to, limit):
+    def get_fills(self, order_id, instrument_id, froms='', to='', limit=''):
         params = {'order_id': order_id, 'instrument_id': instrument_id}
         if froms:
             params['from'] = froms
@@ -159,8 +169,8 @@ class FutureAPI(Client):
         return self._request_without_params(GET, FUTURE_LIMIT + str(instrument_id) + '/price_limit')
 
     # query limit price
-    def get_liquidation(self, instrument_id, status=0, froms = 0, to = 0, limit = 0):
-        params = {'instrument_id': instrument_id, 'status': status}
+    def get_liquidation(self, instrument_id, status='1', froms = 0, to = 0, limit = 0):
+        params = {'status': status}
         if froms:
             params['from'] = froms
         if to:

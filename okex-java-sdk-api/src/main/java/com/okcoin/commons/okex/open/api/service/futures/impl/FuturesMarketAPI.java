@@ -19,7 +19,7 @@ import java.util.List;
  */
 interface FuturesMarketAPI {
 
-    @GET("/api/futures/v3/time")
+    @GET("/api/general/v3/time")
     Call<ServerTime> getServerTime();
 
     @GET("/api/futures/v3/rate")

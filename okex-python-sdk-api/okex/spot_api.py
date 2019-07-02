@@ -28,9 +28,10 @@ class SpotAPI(Client):
     #    return self._request_with_params(GET, SPOT_LEDGER_RECORD + str(symbol) + '/ledger', params, cursor=True)
 
     # take order
-    def take_order(self, otype, side, instrument_id, size, margin_trading=1, client_oid='', price='', funds='', ):
+    def take_order(self, otype, side, instrument_id, size, margin_trading=1, client_oid='', price='', funds='',order_type = ''):
         params = {'type': otype, 'side': side, 'instrument_id': instrument_id, 'size': size, 'client_oid': client_oid,
-                  'price': price, 'funds': funds, 'margin_trading': margin_trading}
+                  'price': price, 'funds': funds, 'margin_trading': margin_trading,'order_type':order_type}
+        print(params)
         return self._request_with_params(POST, SPOT_ORDER, params)
 
     # take orders
@@ -80,9 +81,12 @@ class SpotAPI(Client):
         return self._request_with_params(GET, SPOT_ORDERS_LIST, params, cursor=True)
 
     # query order info
-    def get_order_info(self, order_id, instrument_id):
+    def get_order_info(self, instrument_id='btc-usdt',order_id='',client_oid=''):
         params = {'instrument_id': instrument_id}
-        return self._request_with_params(GET, SPOT_ORDER_INFO + str(order_id), params)
+        if order_id:
+            return self._request_with_params(GET, SPOT_ORDER_INFO + str(order_id), params)
+        elif client_oid:
+            return self._request_with_params(GET, SPOT_ORDER_INFO + str(client_oid), params)
 
     def get_orders_pending(self, froms, to, limit, instrument_id):
         params = {}
