@@ -85,7 +85,9 @@ func (a *OKWSAgent) Subscribe(channel, filter string, cb ReceivedDataCallback) e
 	}
 
 	msg, err := Struct2JsonString(bo)
-	log.Printf("Send Msg: %s", msg)
+	if a.config.IsPrint {
+		log.Printf("Send Msg: %s", msg)
+	}
 	if err := a.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 		return err
 	}
@@ -114,7 +116,9 @@ func (a *OKWSAgent) UnSubscribe(channel, filter string) error {
 	}
 
 	msg, err := Struct2JsonString(bo)
-	log.Printf("Send Msg: %s", msg)
+	if a.config.IsPrint {
+		log.Printf("Send Msg: %s", msg)
+	}
 	if err := a.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 		return err
 	}
@@ -135,7 +139,9 @@ func (a *OKWSAgent) Login(apiKey, passphrase string) error {
 	} else {
 		op, err := loginOp(apiKey, passphrase, timestamp, sign)
 		data, err := Struct2JsonString(op)
-		log.Printf("Send Msg: %s", data)
+		if a.config.IsPrint {
+			log.Printf("Send Msg: %s", data)
+		}
 		err = a.conn.WriteMessage(websocket.TextMessage, []byte(data))
 		if err != nil {
 			return err
@@ -281,10 +287,12 @@ func (a *OKWSAgent) receive() {
 		}
 
 		rsp, err := loadResponse(txtMsg)
-		if rsp != nil {
-			log.Printf("LoadedRep: %+v, err: %+v", rsp, err)
-		} else {
-			log.Printf("TextMessg: %s", txtMsg)
+		if a.config.IsPrint {
+			if rsp != nil {
+				log.Printf("LoadedRep: %+v, err: %+v", rsp, err)
+			} else {
+				log.Printf("TextMessg: %s", txtMsg)
+			}
 		}
 
 		if err != nil {
